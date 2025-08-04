@@ -73,10 +73,18 @@ app.use('*', (req, res) => {
 // Connect to MongoDB
 const connectDB = async () => {
   try {
+    console.log('Attempting to connect to MongoDB...');
+    console.log('MongoDB URI:', process.env.MONGODB_URI ? 'Set' : 'Not set');
+    
+    if (!process.env.MONGODB_URI) {
+      throw new Error('MONGODB_URI environment variable is not set');
+    }
+    
     const conn = await mongoose.connect(process.env.MONGODB_URI);
     console.log(`MongoDB Connected: ${conn.connection.host}`);
   } catch (error) {
     console.error('Error connecting to MongoDB:', error.message);
+    console.error('Full error:', error);
     process.exit(1);
   }
 };
