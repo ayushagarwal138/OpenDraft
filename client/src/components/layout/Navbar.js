@@ -30,6 +30,7 @@ import {
   PersonAdd,
   Article,
   Search,
+  AdminPanelSettings,
 } from '@mui/icons-material';
 import { Link as RouterLink, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
@@ -313,6 +314,18 @@ const Navbar = () => {
                     </ListItemIcon>
                     Dashboard
                   </MenuItem>
+                  {user?.role === 'admin' && (
+                    <MenuItem
+                      component={RouterLink}
+                      to="/admin"
+                      onClick={handleProfileMenuClose}
+                    >
+                      <ListItemIcon>
+                        <AdminPanelSettings fontSize="small" />
+                      </ListItemIcon>
+                      Admin Panel
+                    </MenuItem>
+                  )}
                   <Divider />
                   <MenuItem onClick={handleLogout}>
                     <ListItemIcon>

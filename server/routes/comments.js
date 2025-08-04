@@ -71,4 +71,7 @@ router.delete('/:id/like', unlikeComment);
 // Moderation routes (Admin/Author only)
 router.put('/:id/moderate', authorize('author', 'admin'), moderateComment);
 
+// Admin only routes
+router.get('/all', authorize('admin'), queryValidation, handleValidationErrors, getComments);
+
 module.exports = router; 

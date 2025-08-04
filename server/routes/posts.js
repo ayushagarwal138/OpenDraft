@@ -116,6 +116,9 @@ router.put('/:id', authorize('author', 'admin'), updatePostValidation, handleVal
 router.delete('/:id', authorize('author', 'admin'), deletePost);
 router.get('/me/posts', getMyPosts);
 
+// Admin only routes
+router.get('/all', authorize('admin'), queryValidation, handleValidationErrors, getPosts);
+
 // Like/Unlike routes
 router.post('/:id/like', likePost);
 router.delete('/:id/like', unlikePost);

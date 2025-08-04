@@ -12,6 +12,7 @@ import Home from './pages/Home';
 import Login from './pages/auth/Login';
 import Register from './pages/auth/Register';
 import Dashboard from './pages/Dashboard';
+import AdminDashboard from './pages/AdminDashboard';
 import Profile from './pages/Profile';
 import CreatePost from './pages/posts/CreatePost';
 import EditPost from './pages/posts/EditPost';
@@ -52,6 +53,11 @@ function App() {
                 <Route path="/dashboard" element={
                   <PrivateRoute>
                     <Dashboard />
+                  </PrivateRoute>
+                } />
+                <Route path="/admin" element={
+                  <PrivateRoute>
+                    <AdminDashboard />
                   </PrivateRoute>
                 } />
                 <Route path="/profile" element={

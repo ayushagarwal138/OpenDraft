@@ -27,49 +27,55 @@ api.interceptors.request.use(
 const commentService = {
   // Get comments for a post
   getComments: async (postId, params = {}) => {
-    const response = await api.get(`/comments/post/${postId}`, { params });
+    const response = await api.get(`/posts/${postId}/comments`, { params });
     return response;
   },
 
-  // Get single comment
-  getComment: async (id) => {
-    const response = await api.get(`/comments/${id}`);
-    return response;
-  },
-
-  // Create new comment
-  createComment: async (commentData) => {
-    const response = await api.post('/comments', commentData);
+  // Create comment
+  createComment: async (postId, commentData) => {
+    const response = await api.post(`/posts/${postId}/comments`, commentData);
     return response;
   },
 
   // Update comment
-  updateComment: async (id, commentData) => {
-    const response = await api.put(`/comments/${id}`, commentData);
+  updateComment: async (commentId, commentData) => {
+    const response = await api.put(`/comments/${commentId}`, commentData);
     return response;
   },
 
   // Delete comment
-  deleteComment: async (id) => {
-    const response = await api.delete(`/comments/${id}`);
+  deleteComment: async (commentId) => {
+    const response = await api.delete(`/comments/${commentId}`);
     return response;
   },
 
   // Like comment
-  likeComment: async (id) => {
-    const response = await api.post(`/comments/${id}/like`);
+  likeComment: async (commentId) => {
+    const response = await api.post(`/comments/${commentId}/like`);
     return response;
   },
 
   // Unlike comment
-  unlikeComment: async (id) => {
-    const response = await api.delete(`/comments/${id}/like`);
+  unlikeComment: async (commentId) => {
+    const response = await api.delete(`/comments/${commentId}/like`);
     return response;
   },
 
-  // Moderate comment (approve/reject)
-  moderateComment: async (id, status) => {
-    const response = await api.put(`/comments/${id}/moderate`, { status });
+  // Get all comments (Admin only)
+  getAllComments: async (params = {}) => {
+    const response = await api.get('/comments/all', { params });
+    return response;
+  },
+
+  // Moderate comment (Admin/Author only)
+  moderateComment: async (commentId, moderationData) => {
+    const response = await api.put(`/comments/${commentId}/moderate`, moderationData);
+    return response;
+  },
+
+  // Get user's comments
+  getMyComments: async (params = {}) => {
+    const response = await api.get('/comments/me', { params });
     return response;
   },
 };

@@ -79,6 +79,12 @@ const postService = {
     return response;
   },
 
+  // Get all posts (Admin only)
+  getAllPosts: async (params = {}) => {
+    const response = await api.get('/posts/all', { params });
+    return response;
+  },
+
   // Upload image
   uploadImage: async (file) => {
     const formData = new FormData();
