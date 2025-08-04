@@ -28,7 +28,6 @@ import {
   Logout,
   Login,
   PersonAdd,
-  Article,
   Search,
   AdminPanelSettings,
 } from '@mui/icons-material';
@@ -109,10 +108,15 @@ const Navbar = () => {
         },
       }}
     >
-      <Box sx={{ p: 2 }}>
-        <Typography variant="h6" color="primary" sx={{ fontWeight: 700 }}>
-          OpenDraft
-        </Typography>
+      <Box sx={{ p: 2, display: 'flex', justifyContent: 'center' }}>
+        <img
+          src="/logo.png"
+          alt="OpenDraft Logo"
+          style={{
+            height: '35px',
+            width: 'auto',
+          }}
+        />
       </Box>
       <Divider />
       <List>
@@ -215,25 +219,28 @@ const Navbar = () => {
             >
               <MenuIcon />
             </IconButton>
-            <Typography
-              variant="h5"
+            <Box
               component={RouterLink}
               to="/"
               sx={{
                 textDecoration: 'none',
-                color: 'primary.main',
-                fontWeight: 700,
                 display: 'flex',
                 alignItems: 'center',
                 gap: 1,
                 '&:hover': {
-                  color: 'primary.dark',
+                  opacity: 0.8,
                 },
               }}
             >
-              <Article />
-              OpenDraft
-            </Typography>
+              <img
+                src="/logo.png"
+                alt="OpenDraft Logo"
+                style={{
+                  height: '40px',
+                  width: 'auto',
+                }}
+              />
+            </Box>
           </Box>
 
           {/* Desktop Navigation */}

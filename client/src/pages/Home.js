@@ -162,6 +162,17 @@ const Home = () => {
       {/* Hero Section */}
       <Fade in timeout={800}>
         <Box sx={{ mb: 6, textAlign: 'center' }}>
+          <Box sx={{ mb: 3 }}>
+            <img
+              src="/logo.png"
+              alt="OpenDraft Logo"
+              style={{
+                height: '80px',
+                width: 'auto',
+                marginBottom: '16px',
+              }}
+            />
+          </Box>
           <Typography 
             variant="h2" 
             component="h1" 
