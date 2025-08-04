@@ -38,7 +38,7 @@ console.log('CORS_ORIGIN:', process.env.CORS_ORIGIN);
 
 const corsOptions = {
   origin: process.env.NODE_ENV === 'production' 
-    ? [process.env.CORS_ORIGIN] 
+    ? (process.env.CORS_ORIGIN ? [process.env.CORS_ORIGIN] : ['https://open-draft-iota.vercel.app'])
     : ['http://localhost:3000', 'http://localhost:3001'],
   credentials: true
 };
