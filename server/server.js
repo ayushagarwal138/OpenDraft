@@ -36,13 +36,13 @@ console.log('CORS Configuration:');
 console.log('NODE_ENV:', process.env.NODE_ENV);
 console.log('CORS_ORIGIN:', process.env.CORS_ORIGIN);
 
-const corsOptions = {
-  origin: process.env.NODE_ENV === 'production' 
-    ? (process.env.CORS_ORIGIN ? [process.env.CORS_ORIGIN] : ['https://open-draft-iota.vercel.app'])
-    : ['http://localhost:3000', 'http://localhost:3001'],
-  credentials: true
-};
-app.use(cors(corsOptions));
+// Force CORS to allow Vercel frontend
+app.use(cors({
+  origin: ['https://open-draft-iota.vercel.app', 'http://localhost:3000', 'http://localhost:3001'],
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization']
+}));
 
 // Body parsing middleware
 app.use(express.json({ limit: '10mb' }));
