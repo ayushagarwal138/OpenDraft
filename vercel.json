@@ -11,6 +11,18 @@
   ],
   "routes": [
     {
+      "src": "/logo.png",
+      "dest": "client/build/logo.png"
+    },
+    {
+      "src": "/manifest.json",
+      "dest": "client/build/manifest.json"
+    },
+    {
+      "src": "/robots.txt",
+      "dest": "client/build/robots.txt"
+    },
+    {
       "src": "/(.*)",
       "dest": "client/build/$1"
     }
