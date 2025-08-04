@@ -1,17 +1,5 @@
 import React from 'react';
 import {
-  Container,
-  Typography,
-  Box,
-  Card,
-  CardContent,
-  List,
-  ListItem,
-  ListItemText,
-  Divider,
-  useTheme
-} from '@mui/material';
-import {
   Security,
   Lock,
   Visibility,

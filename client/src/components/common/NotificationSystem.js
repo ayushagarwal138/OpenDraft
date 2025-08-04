@@ -49,7 +49,7 @@ const NotificationSystem = () => {
 
   useEffect(() => {
     setNotifications(mockNotifications);
-  }, [mockNotifications]);
+  }, []);
 
   const getIcon = (type) => {
     switch (type) {

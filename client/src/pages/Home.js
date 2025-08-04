@@ -1,42 +1,4 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import {
-  Container,
-  Grid,
-  Card,
-  CardContent,
-  CardMedia,
-  Typography,
-  Button,
-  Box,
-  TextField,
-  FormControl,
-  InputLabel,
-  Select,
-  MenuItem,
-  Chip,
-  Pagination,
-  CircularProgress,
-  Alert,
-  Skeleton,
-  Fade,
-  Grow,
-  useTheme,
-  useMediaQuery,
-  IconButton
-} from '@mui/material';
-import {
-  CalendarToday,
-  Person,
-  Visibility,
-  Favorite,
-  FavoriteBorder,
-  Search,
-  FilterList,
-  Clear,
-  TrendingUp,
-  BookmarkBorder,
-  Share
-} from '@mui/icons-material';
 import { Link as RouterLink } from 'react-router-dom';
 import postService from '../services/postService';
 

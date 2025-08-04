@@ -1,17 +1,5 @@
 import React from 'react';
 import {
-  Container,
-  Typography,
-  Box,
-  Grid,
-  Card,
-  CardContent,
-  Avatar,
-  Chip,
-  useTheme,
-  useMediaQuery
-} from '@mui/material';
-import {
   Article,
   Code,
   Security,
@@ -21,11 +9,7 @@ import {
   School,
   Support
 } from '@mui/icons-material';
-import { Link as RouterLink, useNavigate } from 'react-router-dom';
-
 const About = () => {
-  const theme = useTheme();
-  
   const navigate = useNavigate();
 
   const features = [

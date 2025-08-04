@@ -1,58 +1,6 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import {
-  Container,
-  Typography,
-  Box,
-  Grid,
-  Card,
-  CardContent,
-  Chip,
-  List,
-  ListItem,
-  ListItemIcon,
-  ListItemText,
-  useTheme,
-  useMediaQuery
-} from '@mui/material';
-import {
-  Article,
-  Code,
-  Security,
-  Speed,
-  People,
-  TrendingUp,
-  School,
-  Support,
-  CheckCircle,
-  AutoAwesome,
-  Brush,
-  Cloud,
-  Devices,
-  Analytics,
-  Comment,
-  Share,
-  Bookmark,
-  Search,
-  FilterList,
-  Notifications,
-  Dashboard,
-  Edit,
-  Delete,
-  Visibility,
-  Favorite,
-  CalendarToday,
-  Person,
-  Settings,
-  Help,
-  Email,
-  Phone,
-  Chat
-} from '@mui/icons-material';
-
 const Features = () => {
-  const theme = useTheme();
-  
   const navigate = useNavigate();
 
   const mainFeatures = [

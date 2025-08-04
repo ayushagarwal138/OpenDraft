@@ -1,30 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useParams } from 'react-router-dom';
-import {
-  Container,
-  Typography,
-  Box,
-  Chip,
-  Button,
-  Avatar,
-  Divider,
-  Paper,
-  TextField,
-  Alert,
-  CircularProgress,
-  Grid,
-  Card,
-  CardContent
-} from '@mui/material';
-import {
-  CalendarToday,
-  Person,
-  Visibility,
-  Favorite,
-  FavoriteBorder,
-  Comment,
-  Share
-} from '@mui/icons-material';
 import { useAuth } from '../../context/AuthContext';
 import postService from '../../services/postService';
 import commentService from '../../services/commentService';
