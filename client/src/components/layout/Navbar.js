@@ -34,6 +34,7 @@ import { Link as RouterLink, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import NotificationSystem from '../common/NotificationSystem';
 import ThemeToggle from '../common/ThemeToggle';
+import Logo from '../common/Logo';
 
 const Navbar = () => {
   const { user, isAuthenticated, logout } = useAuth();
@@ -108,14 +109,7 @@ const Navbar = () => {
       }}
     >
       <Box sx={{ p: 2, display: 'flex', justifyContent: 'center' }}>
-        <img
-          src="/logo.png"
-          alt="OpenDraft Logo"
-          style={{
-            height: '35px',
-            width: 'auto',
-          }}
-        />
+        <Logo height="35px" />
       </Box>
       <Divider />
       <List>
@@ -231,14 +225,7 @@ const Navbar = () => {
                 },
               }}
             >
-              <img
-                src="/logo.png"
-                alt="OpenDraft Logo"
-                style={{
-                  height: '40px',
-                  width: 'auto',
-                }}
-              />
+              <Logo height="40px" />
             </Box>
           </Box>
 

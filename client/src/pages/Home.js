@@ -5,6 +5,7 @@ import { useTheme } from '@mui/material/styles';
 import { Search, FilterList, Clear, Person, CalendarToday, Visibility, Favorite, TrendingUp, BookmarkBorder, Share } from '@mui/icons-material';
 import { Grid, Card, Skeleton, CardContent, Box, Container, Fade, Typography, TextField, FormControl, InputLabel, Select, MenuItem, Button, Alert, Grow, CardMedia, Chip, Pagination, IconButton } from '@mui/material';import { Link as RouterLink } from 'react-router-dom';
 import postService from '../services/postService';
+import Logo from '../components/common/Logo';
 
 const Home = () => {
   const [posts, setPosts] = useState([]);
@@ -129,15 +130,7 @@ const Home = () => {
       <Fade in timeout={800}>
         <Box sx={{ mb: 6, textAlign: 'center' }}>
           <Box sx={{ mb: 3 }}>
-            <img
-              src="/logo.png"
-              alt="OpenDraft Logo"
-              style={{
-                height: '80px',
-                width: 'auto',
-                marginBottom: '16px',
-              }}
-            />
+            <Logo height="80px" />
           </Box>
           <Typography 
             variant="h2" 

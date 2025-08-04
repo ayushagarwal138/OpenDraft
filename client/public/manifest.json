@@ -5,6 +5,11 @@
     {
       "src": "logo.png",
       "type": "image/png",
+      "sizes": "200x80"
+    },
+    {
+      "src": "logo.svg",
+      "type": "image/svg+xml",
       "sizes": "any"
     }
   ],
