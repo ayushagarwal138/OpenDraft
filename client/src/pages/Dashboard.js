@@ -56,7 +56,7 @@ import EnhancedAnalytics from '../components/dashboard/EnhancedAnalytics';
 
 const Dashboard = () => {
   const { user } = useAuth();
-  const navigate = useNavigate();
+  
   const [posts, setPosts] = useState([]);
   const [filteredPosts, setFilteredPosts] = useState([]);
   const [loading, setLoading] = useState(true);

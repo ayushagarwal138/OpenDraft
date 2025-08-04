@@ -61,8 +61,8 @@ const AdminDashboard = () => {
   
   // Data states
   const [users, setUsers] = useState([]);
-  const [posts, setPosts] = useState([]);
-  const [comments, setComments] = useState([]);
+  
+  
   const [analytics, setAnalytics] = useState({});
   
   // Dialog states

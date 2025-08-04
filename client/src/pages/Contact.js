@@ -34,7 +34,7 @@ const schema = yup.object({
 }).required();
 
 const Contact = () => {
-  const theme = useTheme();
+  
   const navigate = useNavigate();
   const [submitted, setSubmitted] = useState(false);
 

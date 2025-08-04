@@ -139,7 +139,7 @@ const ImageUpload = ({
       setUploading(false);
       setUploadProgress(0);
     }
-  }, [multiple, onImageUpload, maxSize, acceptedTypes, maxWidth, maxHeight, quality, validateFile, compressImage]);
+  }, [multiple, onImageUpload]);
 
   // Drag and drop handlers
   const handleDrag = useCallback((e) => {

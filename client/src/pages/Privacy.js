@@ -21,7 +21,7 @@ import {
 } from '@mui/icons-material';
 
 const Privacy = () => {
-  const theme = useTheme();
+  
 
   const sections = [
     {

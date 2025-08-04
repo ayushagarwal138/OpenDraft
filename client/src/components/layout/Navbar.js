@@ -16,8 +16,7 @@ import {
   ListItemIcon,
   ListItemText,
   Divider,
-  useTheme,
-  useMediaQuery,
+
 } from '@mui/material';
 import {
   Menu as MenuIcon,
@@ -40,7 +39,7 @@ const Navbar = () => {
   const { user, isAuthenticated, logout } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
-  const theme = useTheme();
+
   
   const [anchorEl, setAnchorEl] = useState(null);
   const [mobileOpen, setMobileOpen] = useState(false);

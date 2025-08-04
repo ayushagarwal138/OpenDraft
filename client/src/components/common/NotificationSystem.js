@@ -1,13 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import {
   Snackbar,
-  Alert,
-  AlertTitle,
-  Slide,
   Box,
   Typography,
   IconButton,
-  Collapse
 } from '@mui/material';
 import {
   Close,
@@ -21,7 +17,7 @@ import {
 const NotificationSystem = () => {
   const [notifications, setNotifications] = useState([]);
   const [open, setOpen] = useState(false);
-  const [currentNotification, setCurrentNotification] = useState(null);
+
 
   // Mock notifications - in a real app, these would come from your backend
   const mockNotifications = [
@@ -53,7 +49,7 @@ const NotificationSystem = () => {
 
   useEffect(() => {
     setNotifications(mockNotifications);
-  }, []);
+  }, [mockNotifications]);
 
   const getIcon = (type) => {
     switch (type) {

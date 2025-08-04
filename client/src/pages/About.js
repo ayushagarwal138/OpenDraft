@@ -25,7 +25,7 @@ import { Link as RouterLink, useNavigate } from 'react-router-dom';
 
 const About = () => {
   const theme = useTheme();
-  const isMobile = useMediaQuery(theme.breakpoints.down('md'));
+  
   const navigate = useNavigate();
 
   const features = [
