@@ -32,6 +32,10 @@ const limiter = rateLimit({
 app.use('/api/', limiter);
 
 // CORS configuration
+console.log('CORS Configuration:');
+console.log('NODE_ENV:', process.env.NODE_ENV);
+console.log('CORS_ORIGIN:', process.env.CORS_ORIGIN);
+
 const corsOptions = {
   origin: process.env.NODE_ENV === 'production' 
     ? [process.env.CORS_ORIGIN] 
