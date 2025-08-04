@@ -110,7 +110,7 @@ const SocialSharing = ({
           url: shareData.url,
         });
       } catch (err) {
-        console.log('Error sharing:', err);
+        // Error sharing content
       }
     } else {
       setShowCustomDialog(true);

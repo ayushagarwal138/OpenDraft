@@ -63,7 +63,7 @@ const useAutoSave = (data, saveKey, delay = 3000) => {
       setIsSaving(false);
       
       if (success) {
-        console.log('Auto-saved successfully');
+        // Auto-saved successfully
       }
     }, delay);
 

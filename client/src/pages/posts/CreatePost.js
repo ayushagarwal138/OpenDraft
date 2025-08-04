@@ -211,7 +211,7 @@ const CreatePost = () => {
 
   const handleImageUpload = (images) => {
     // Handle image upload - you can integrate with your image service
-    console.log('Images uploaded:', images);
+            // Images uploaded successfully
     showSuccess('Images uploaded successfully!');
   };
 
@@ -220,7 +220,7 @@ const CreatePost = () => {
   };
 
   const handleSearch = (query, filters) => {
-    console.log('Search query:', query, 'Filters:', filters);
+    // Search and filters applied
     // Implement search functionality
   };
 
