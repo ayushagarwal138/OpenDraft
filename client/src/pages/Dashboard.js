@@ -1,9 +1,10 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 
 import { Link as RouterLink } from 'react-router-dom';
 import { Refresh, Add, Sort, Visibility, Edit, Delete } from '@mui/icons-material';
 import { Container, Box, CircularProgress, Typography, Alert, Grid, Paper, Button, Tabs, Tab, LinearProgress, TableContainer, Table, TableHead, TableRow, TableCell, TableBody, Chip, IconButton, Dialog, DialogTitle, DialogContent, DialogActions } from '@mui/material';import { useAuth } from '../context/AuthContext';
 import postService from '../services/postService';
+// eslint-disable-next-line no-unused-vars
 import AnalyticsWidget from '../components/dashboard/AnalyticsWidget';
 import AdvancedSearch from '../components/common/AdvancedSearch';
 import EnhancedAnalytics from '../components/dashboard/EnhancedAnalytics';
@@ -23,15 +24,7 @@ const Dashboard = () => {
   const [sortOrder, setSortOrder] = useState('desc');
   const [selectedStatus, setSelectedStatus] = useState('all');
 
-  useEffect(() => {
-    fetchMyPosts();
-  }, []);
-
-  useEffect(() => {
-    filterAndSortPosts();
-  }, [posts, searchQuery, sortBy, sortOrder, selectedStatus]);
-
-  const filterAndSortPosts = () => {
+  const filterAndSortPosts = useCallback(() => {
     let filtered = [...posts];
 
     // Filter by search query
@@ -66,7 +59,15 @@ const Dashboard = () => {
     });
 
     setFilteredPosts(filtered);
-  };
+  }, [posts, searchQuery, sortBy, sortOrder, selectedStatus]);
+
+  useEffect(() => {
+    fetchMyPosts();
+  }, []);
+
+  useEffect(() => {
+    filterAndSortPosts();
+  }, [filterAndSortPosts]);
 
   const fetchMyPosts = async () => {
     try {

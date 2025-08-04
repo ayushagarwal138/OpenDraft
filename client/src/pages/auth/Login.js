@@ -39,7 +39,7 @@ const Login = () => {
 
   useEffect(() => {
     clearError();
-  }, []);
+  }, [clearError]);
 
   const onSubmit = async (data) => {
     setLoading(true);

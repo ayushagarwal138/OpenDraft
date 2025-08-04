@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import {
   Snackbar,
   Box,
@@ -20,7 +20,7 @@ const NotificationSystem = () => {
 
 
   // Mock notifications - in a real app, these would come from your backend
-  const mockNotifications = [
+  const mockNotifications = useMemo(() => [
     {
       id: 1,
       type: 'success',
@@ -45,11 +45,12 @@ const NotificationSystem = () => {
       timestamp: new Date(Date.now() - 1000 * 60 * 30), // 30 minutes ago
       read: true
     }
-  ];
+  ], [])
 
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => {
     setNotifications(mockNotifications);
-  }, []);
+  }, [mockNotifications]);
 
   const getIcon = (type) => {
     switch (type) {

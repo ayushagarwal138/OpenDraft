@@ -29,6 +29,7 @@ import {
 
 const PostDetail = () => {
   const { slug } = useParams();
+  // eslint-disable-next-line no-unused-vars
   const { user, isAuthenticated } = useAuth();
   const [post, setPost] = useState(null);
   const [comments, setComments] = useState([]);
@@ -58,9 +59,10 @@ const PostDetail = () => {
     }
   }, []);
 
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => {
     fetchPost();
-  }, [slug]);
+  }, [slug, fetchPost]);
 
   useEffect(() => {
     if (post?._id) {

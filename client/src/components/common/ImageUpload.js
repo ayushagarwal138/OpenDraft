@@ -139,6 +139,7 @@ const ImageUpload = ({
       setUploading(false);
       setUploadProgress(0);
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [multiple, onImageUpload]);
 
   // Drag and drop handlers

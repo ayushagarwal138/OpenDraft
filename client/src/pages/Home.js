@@ -48,7 +48,7 @@ const Home = () => {
 
   useEffect(() => {
     fetchPosts();
-  }, [page, search, category]);
+  }, [page, search, category, fetchPosts]);
 
   const handlePageChange = (event, value) => {
     setPage(value);

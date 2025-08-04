@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 
 import { People, Article, Comment, TrendingUp, Refresh, Edit, Delete } from '@mui/icons-material';
 import { Container, Alert, Box, CircularProgress, Typography, Grid, Card, CardContent, Paper, Tabs, Tab, Button, TableContainer, Table, TableHead, TableRow, TableCell, TableBody, FormControl, Select, MenuItem, Chip, Tooltip, IconButton, Dialog, DialogTitle, DialogContent, TextField, InputLabel, DialogActions } from '@mui/material';import { useAuth } from '../context/AuthContext';
@@ -14,7 +14,9 @@ const AdminDashboard = () => {
   
   // Data states
   const [users, setUsers] = useState([]);
+  // eslint-disable-next-line no-unused-vars
   const [posts, setPosts] = useState([]);
+  // eslint-disable-next-line no-unused-vars
   const [comments, setComments] = useState([]);
   const [analytics, setAnalytics] = useState({});
   
@@ -23,16 +25,7 @@ const AdminDashboard = () => {
   const [selectedUser, setSelectedUser] = useState(null);
   const [editUserData, setEditUserData] = useState({});
 
-  // Check if user is admin
-  useEffect(() => {
-    if (currentUser && currentUser.role !== 'admin') {
-      setError('Access denied. Admin privileges required.');
-      return;
-    }
-    fetchAdminData();
-  }, [currentUser]);
-
-  const fetchAdminData = async () => {
+  const fetchAdminData = useCallback(async () => {
     try {
       setLoading(true);
       const [usersRes, postsRes, commentsRes] = await Promise.all([
@@ -53,7 +46,17 @@ const AdminDashboard = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
+
+  // Check if user is admin
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  useEffect(() => {
+    if (currentUser && currentUser.role !== 'admin') {
+      setError('Access denied. Admin privileges required.');
+      return;
+    }
+    fetchAdminData();
+  }, [currentUser, fetchAdminData]);
 
   const calculateAnalytics = (users, posts, comments) => {
     const totalUsers = users.length;
