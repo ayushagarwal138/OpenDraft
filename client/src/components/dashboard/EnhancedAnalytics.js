@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import {
   Box,
   Paper,
@@ -40,11 +40,7 @@ const EnhancedAnalytics = ({ posts = [] }) => {
     audienceGrowth: 0,
   });
 
-  useEffect(() => {
-    calculateAnalytics();
-  }, [posts, calculateAnalytics]);
-
-  const calculateAnalytics = () => {
+  const calculateAnalytics = useCallback(() => {
     if (posts.length === 0) return;
 
     const totalViews = posts.reduce((sum, post) => sum + (post.views || 0), 0);
@@ -75,7 +71,11 @@ const EnhancedAnalytics = ({ posts = [] }) => {
       recentGrowth,
       audienceGrowth,
     });
-  };
+  }, [posts]);
+
+  useEffect(() => {
+    calculateAnalytics();
+  }, [calculateAnalytics]);
 
   const getGrowthIcon = (growth) => {
     return growth >= 0 ? <TrendingUp color="success" /> : <TrendingDown color="error" />;
