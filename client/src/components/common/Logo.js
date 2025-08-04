@@ -1,5 +1,8 @@
 import React, { useState } from 'react';
 import { Box, Typography } from '@mui/material';
+import logoPng from '../../assets/logo.png';
+// eslint-disable-next-line no-unused-vars
+import logoSvg from '../../assets/logo.svg';
 
 const Logo = ({ 
   height = '40px', 
@@ -47,7 +50,7 @@ const Logo = ({
   return (
     <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, ...sx }}>
       <img
-        src="/logo.png"
+        src={logoPng}
         alt="OpenDraft Logo"
         style={{
           height,
