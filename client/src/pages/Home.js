@@ -1,5 +1,9 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { Link as RouterLink } from 'react-router-dom';
+
+import { useMediaQuery } from '@mui/material';
+import { useTheme } from '@mui/material/styles';
+import { Search, FilterList, Clear, Person, CalendarToday, Visibility, Favorite, TrendingUp, BookmarkBorder, Share } from '@mui/icons-material';
+import { Grid, Card, Skeleton, CardContent, Box, Container, Fade, Typography, TextField, FormControl, InputLabel, Select, MenuItem, Button, Alert, Grow, CardMedia, Chip, Pagination, IconButton } from '@mui/material';import { Link as RouterLink } from 'react-router-dom';
 import postService from '../services/postService';
 
 const Home = () => {

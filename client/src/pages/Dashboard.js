@@ -1,5 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { useAuth } from '../context/AuthContext';
+
+import { Link as RouterLink } from 'react-router-dom';
+import { Refresh, Add, Sort, Visibility, Edit, Delete } from '@mui/icons-material';
+import { Container, Box, CircularProgress, Typography, Alert, Grid, Paper, Button, Tabs, Tab, LinearProgress, TableContainer, Table, TableHead, TableRow, TableCell, TableBody, Chip, IconButton, Dialog, DialogTitle, DialogContent, DialogActions } from '@mui/material';import { useAuth } from '../context/AuthContext';
 import postService from '../services/postService';
 import AnalyticsWidget from '../components/dashboard/AnalyticsWidget';
 import AdvancedSearch from '../components/common/AdvancedSearch';
@@ -162,7 +165,7 @@ const Dashboard = () => {
                 </Button>
                 <Button
                   variant="contained"
-                  startIcon={<AddIcon />}
+                  startIcon={<Add />}
                   component={RouterLink}
                   to="/create-post"
                 >
@@ -294,21 +297,21 @@ const Dashboard = () => {
                             component={RouterLink}
                             to={`/posts/${post.slug}`}
                           >
-                            <VisibilityIcon />
+                            <Visibility />
                           </IconButton>
                           <IconButton
                             size="small"
                             component={RouterLink}
                             to={`/edit-post/${post._id}`}
                           >
-                            <EditIcon />
+                            <Edit />
                           </IconButton>
                           <IconButton
                             size="small"
                             color="error"
                             onClick={() => handleDeleteClick(post)}
                           >
-                            <DeleteIcon />
+                            <Delete />
                           </IconButton>
                         </Box>
                       </TableCell>

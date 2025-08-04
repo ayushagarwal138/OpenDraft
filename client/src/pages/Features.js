@@ -1,5 +1,7 @@
 import React from 'react';
-import { useNavigate } from 'react-router-dom';
+
+import { Article, Dashboard, Security, Devices, Edit, FilterList, Bookmark, Cloud, TrendingUp, Person, Comment, Share, Search, Notifications, Code, Brush, AutoAwesome, School, Settings, CheckCircle, Help, Email, Chat } from '@mui/icons-material';
+import { Container, Box, Typography, Grid, Card, List, ListItem, ListItemIcon, ListItemText, Chip } from '@mui/material';import { useNavigate } from 'react-router-dom';
 const Features = () => {
   const navigate = useNavigate();
 
