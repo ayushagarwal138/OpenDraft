@@ -19,25 +19,17 @@ import {
   Select,
   MenuItem,
   IconButton,
-  Tooltip,
   useTheme,
 } from '@mui/material';
 import {
   Article,
   Code,
   Business,
-  School,
   Flight,
-  Restaurant,
-  FitnessCenter,
-  Psychology,
-  Science,
   Palette,
   Add,
   Preview,
-  Edit,
   Delete,
-  ContentCopy,
 } from '@mui/icons-material';
 
 const ContentTemplates = ({ onTemplateSelect, onSaveTemplate, savedTemplates = [] }) => {

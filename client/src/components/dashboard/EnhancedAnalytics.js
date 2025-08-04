@@ -10,7 +10,6 @@ import {
   Chip,
   IconButton,
   Tooltip,
-  useTheme,
 } from '@mui/material';
 import {
   TrendingUp,
@@ -21,14 +20,9 @@ import {
   Share,
   MoreVert,
   Refresh,
-  Analytics,
-  Timeline,
-  BarChart,
-  PieChart,
 } from '@mui/icons-material';
 
 const EnhancedAnalytics = ({ posts = [] }) => {
-  const theme = useTheme();
   const [analytics, setAnalytics] = useState({
     totalViews: 0,
     totalLikes: 0,

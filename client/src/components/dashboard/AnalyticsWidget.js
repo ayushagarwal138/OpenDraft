@@ -6,19 +6,13 @@ import {
   Box,
   LinearProgress,
   Chip,
-  useTheme
 } from '@mui/material';
 import {
   TrendingUp,
   TrendingDown,
-  Visibility,
-  Favorite,
-  Comment,
-  Share
 } from '@mui/icons-material';
 
 const AnalyticsWidget = ({ title, value, change, icon, color, maxValue, showProgress = false }) => {
-  const theme = useTheme();
   
   const isPositive = change >= 0;
   const changeColor = isPositive ? 'success.main' : 'error.main';
