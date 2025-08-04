@@ -3,6 +3,29 @@ import { useParams } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import postService from '../../services/postService';
 import commentService from '../../services/commentService';
+import {
+  Container,
+  Box,
+  Typography,
+  CircularProgress,
+  Alert,
+  Button,
+  Chip,
+  Avatar,
+  Divider,
+  Paper,
+  TextField,
+  Card,
+  CardContent
+} from '@mui/material';
+import {
+  CalendarToday,
+  Visibility,
+  Favorite,
+  FavoriteBorder,
+  Comment,
+  Share
+} from '@mui/icons-material';
 
 const PostDetail = () => {
   const { slug } = useParams();
