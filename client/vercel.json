@@ -2,7 +2,7 @@
   "version": 2,
   "builds": [
     {
-      "src": "client/package.json",
+      "src": "package.json",
       "use": "@vercel/static-build",
       "config": {
         "distDir": "build"
@@ -12,19 +12,19 @@
   "routes": [
     {
       "src": "/logo.png",
-      "dest": "client/build/logo.png"
+      "dest": "build/logo.png"
     },
     {
       "src": "/manifest.json",
-      "dest": "client/build/manifest.json"
+      "dest": "build/manifest.json"
     },
     {
       "src": "/robots.txt",
-      "dest": "client/build/robots.txt"
+      "dest": "build/robots.txt"
     },
     {
       "src": "/(.*)",
-      "dest": "client/build/$1"
+      "dest": "build/$1"
     }
   ],
   "env": {
