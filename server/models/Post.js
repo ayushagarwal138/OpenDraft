@@ -129,7 +129,6 @@ postSchema.virtual('likeCount').get(function() {
 });
 
 // Index for better query performance
-postSchema.index({ slug: 1 });
 postSchema.index({ author: 1, status: 1 });
 postSchema.index({ status: 1, publishedAt: -1 });
 postSchema.index({ tags: 1 });
