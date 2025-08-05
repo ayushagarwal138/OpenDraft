@@ -22,7 +22,7 @@ const schema = yup.object({
 }).required();
 
 const Login = () => {
-  const { login, error, clearError } = useAuth();
+  const { login, error } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
   const [loading, setLoading] = useState(false);

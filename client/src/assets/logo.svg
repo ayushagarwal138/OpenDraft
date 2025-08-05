@@ -16,4 +16,4 @@
   <!-- Text -->
   <text x="85" y="35" font-family="Arial, sans-serif" font-size="24" font-weight="bold" fill="url(#logoGradient)">Open</text>
   <text x="85" y="55" font-family="Arial, sans-serif" font-size="24" font-weight="bold" fill="#1976d2">Draft</text>
-</svg>
+</svg> 
