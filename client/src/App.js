@@ -6,6 +6,7 @@ import { ThemeProvider } from './contexts/ThemeContext';
 import Navbar from './components/layout/Navbar';
 import Footer from './components/layout/Footer';
 import PrivateRoute from './components/auth/PrivateRoute';
+import AdminRoute from './components/auth/AdminRoute';
 
 // Pages
 import Home from './pages/Home';
@@ -56,9 +57,9 @@ function App() {
                   </PrivateRoute>
                 } />
                 <Route path="/admin" element={
-                  <PrivateRoute>
+                  <AdminRoute>
                     <AdminDashboard />
-                  </PrivateRoute>
+                  </AdminRoute>
                 } />
                 <Route path="/profile" element={
                   <PrivateRoute>

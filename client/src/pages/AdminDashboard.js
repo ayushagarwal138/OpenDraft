@@ -48,15 +48,10 @@ const AdminDashboard = () => {
     }
   }, []);
 
-  // Check if user is admin
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+  // Fetch admin data
   useEffect(() => {
-    if (currentUser && currentUser.role !== 'admin') {
-      setError('Access denied. Admin privileges required.');
-      return;
-    }
     fetchAdminData();
-  }, [currentUser, fetchAdminData]);
+  }, [fetchAdminData]);
 
   const calculateAnalytics = (users, posts, comments) => {
     const totalUsers = users.length;
