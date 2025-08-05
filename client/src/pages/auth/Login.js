@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { useNavigate, useLocation, Link as RouterLink } from 'react-router-dom';
 import {
   Container,
@@ -35,11 +35,11 @@ const Login = () => {
     resolver: yupResolver(schema)
   });
 
+
+
   const from = location.state?.from?.pathname || '/dashboard';
 
-  useEffect(() => {
-    clearError();
-  }, [clearError]);
+
 
   const onSubmit = async (data) => {
     setLoading(true);

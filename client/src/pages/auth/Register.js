@@ -33,14 +33,19 @@ const Register = () => {
   const {
     register,
     handleSubmit,
-    formState: { errors }
+    formState: { errors },
+    watch
   } = useForm({
     resolver: yupResolver(schema)
   });
 
+  // Clear error when user starts typing
+  const watchedFields = watch();
   useEffect(() => {
-    clearError();
-  }, [clearError]);
+    if (error && (watchedFields.name || watchedFields.email || watchedFields.password || watchedFields.confirmPassword)) {
+      clearError();
+    }
+  }, [watchedFields.name, watchedFields.email, watchedFields.password, watchedFields.confirmPassword, error, clearError]);
 
   const onSubmit = async (data) => {
     setLoading(true);
