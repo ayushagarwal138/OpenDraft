@@ -1,5 +1,6 @@
 const Comment = require('../models/Comment');
 const Post = require('../models/Post');
+const Notification = require('../models/Notification');
 
 // @desc    Get comments for a post
 // @route   GET /api/comments/post/:postId
@@ -42,6 +43,44 @@ const getComments = async (req, res) => {
       success: false,
       message: 'Error fetching comments',
       error: error.message
+    });
+  }
+};
+
+// @desc    Get all comments (admin)
+// @route   GET /api/comments/all
+// @access  Private (Admin)
+const getAllComments = async (req, res) => {
+  try {
+    const page = parseInt(req.query.page, 10) || 1;
+    const limit = parseInt(req.query.limit, 10) || 20;
+    const startIndex = (page - 1) * limit;
+
+    const query = {};
+    if (req.query.status) {
+      query.status = req.query.status;
+    }
+
+    const comments = await Comment.find(query)
+      .populate('author', 'name avatar')
+      .sort({ createdAt: -1 })
+      .skip(startIndex)
+      .limit(limit);
+
+    const total = await Comment.countDocuments(query);
+
+    res.json({
+      success: true,
+      page,
+      limit,
+      total,
+      comments,
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: 'Error fetching all comments',
+      error: error.message,
     });
   }
 };
@@ -131,6 +170,27 @@ const createComment = async (req, res) => {
 
     // Populate author info
     await comment.populate('author', 'name avatar');
+
+    // Notification logic
+    // Notify post author on new comment
+    if (!req.body.parentComment && post.author.toString() !== req.user.id) {
+      await Notification.create({
+        user: post.author,
+        type: 'comment',
+        data: { post: post._id, comment: comment._id, actor: req.user.id },
+      });
+    }
+    // Notify parent comment author on reply (if not self)
+    if (req.body.parentComment) {
+      const parentComment = await Comment.findById(req.body.parentComment);
+      if (parentComment && parentComment.author.toString() !== req.user.id) {
+        await Notification.create({
+          user: parentComment.author,
+          type: 'reply',
+          data: { post: post._id, comment: comment._id, actor: req.user.id },
+        });
+      }
+    }
 
     res.status(201).json({
       success: true,
@@ -354,13 +414,77 @@ const moderateComment = async (req, res) => {
   }
 };
 
+// @desc    Add a reaction to a comment
+// @route   POST /api/comments/:id/reaction
+// @access  Private
+const addReactionToComment = async (req, res) => {
+  try {
+    const { emoji } = req.body;
+    if (!emoji) {
+      return res.status(400).json({ success: false, message: 'Emoji is required' });
+    }
+    const comment = await Comment.findById(req.params.id);
+    if (!comment) {
+      return res.status(404).json({ success: false, message: 'Comment not found' });
+    }
+    if (!comment.reactions.has(emoji)) {
+      comment.reactions.set(emoji, []);
+    }
+    const users = comment.reactions.get(emoji).map(id => id.toString());
+    let reacted = false;
+    if (!users.includes(req.user.id)) {
+      comment.reactions.get(emoji).push(req.user.id);
+      await comment.save();
+      reacted = true;
+    }
+    // Notification logic: only notify if this is a new reaction and not self
+    if (reacted && comment.author.toString() !== req.user.id) {
+      await Notification.create({
+        user: comment.author,
+        type: 'reaction',
+        data: { comment: comment._id, emoji, actor: req.user.id },
+      });
+    }
+    res.json({ success: true, reactions: comment.reactions });
+  } catch (error) {
+    res.status(500).json({ success: false, message: 'Error adding reaction', error: error.message });
+  }
+};
+
+// @desc    Remove a reaction from a comment
+// @route   DELETE /api/comments/:id/reaction
+// @access  Private
+const removeReactionFromComment = async (req, res) => {
+  try {
+    const { emoji } = req.body;
+    if (!emoji) {
+      return res.status(400).json({ success: false, message: 'Emoji is required' });
+    }
+    const comment = await Comment.findById(req.params.id);
+    if (!comment) {
+      return res.status(404).json({ success: false, message: 'Comment not found' });
+    }
+    if (comment.reactions.has(emoji)) {
+      const filtered = comment.reactions.get(emoji).filter(id => id.toString() !== req.user.id);
+      comment.reactions.set(emoji, filtered);
+      await comment.save();
+    }
+    res.json({ success: true, reactions: comment.reactions });
+  } catch (error) {
+    res.status(500).json({ success: false, message: 'Error removing reaction', error: error.message });
+  }
+};
+
 module.exports = {
   getComments,
+  getAllComments,
   getComment,
   createComment,
   updateComment,
   deleteComment,
   likeComment,
   unlikeComment,
-  moderateComment
+  moderateComment,
+  addReactionToComment,
+  removeReactionFromComment
 }; 

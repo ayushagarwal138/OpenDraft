@@ -5,6 +5,8 @@ const helmet = require('helmet');
 const rateLimit = require('express-rate-limit');
 const dotenv = require('dotenv');
 const path = require('path');
+const cron = require('node-cron');
+const Post = require('./models/Post');
 
 // Load environment variables
 dotenv.config();
@@ -14,6 +16,8 @@ const authRoutes = require('./routes/auth');
 const userRoutes = require('./routes/users');
 const postRoutes = require('./routes/posts');
 const commentRoutes = require('./routes/comments');
+const notificationRoutes = require('./routes/notifications');
+const reportRoutes = require('./routes/reports');
 
 // Import middleware
 const errorHandler = require('./middleware/errorHandler');
@@ -56,6 +60,8 @@ app.use('/api/auth', authRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/posts', postRoutes);
 app.use('/api/comments', commentRoutes);
+app.use('/api/notifications', notificationRoutes);
+app.use('/api/reports', reportRoutes);
 
 // Health check endpoint
 app.get('/api/health', (req, res) => {
@@ -105,5 +111,24 @@ const startServer = async () => {
 };
 
 startServer();
+
+// Scheduled publishing job: runs every minute
+cron.schedule('* * * * *', async () => {
+  try {
+    const now = new Date();
+    const postsToPublish = await Post.find({
+      status: 'draft',
+      scheduledDate: { $lte: now, $ne: null }
+    });
+    for (const post of postsToPublish) {
+      post.status = 'published';
+      post.publishedAt = now;
+      await post.save();
+      console.log(`Published scheduled post: ${post.title} (${post._id})`);
+    }
+  } catch (err) {
+    console.error('Error in scheduled publishing job:', err);
+  }
+});
 
 module.exports = app; 

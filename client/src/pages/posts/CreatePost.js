@@ -158,6 +158,7 @@ const CreatePost = () => {
         content: content,
         tags,
         seo: seoData,
+        ...(scheduledDate && { scheduledDate }),
       };
 
       const response = await postService.createPost(postData);
@@ -182,6 +183,7 @@ const CreatePost = () => {
         status: 'draft',
         tags,
         seo: seoData,
+        ...(scheduledDate && { scheduledDate }),
       };
 
       await postService.createPost(data);
@@ -245,9 +247,11 @@ const CreatePost = () => {
           
           {/* Action Buttons */}
           <Tooltip title="Save Draft (Ctrl+S)">
-            <IconButton onClick={handleSaveDraft} disabled={loading}>
-              <Save />
-            </IconButton>
+            <span>
+              <IconButton onClick={handleSaveDraft} disabled={loading}>
+                <Save />
+              </IconButton>
+            </span>
           </Tooltip>
           
           <Tooltip title="Preview (Ctrl+Shift+P)">

@@ -1,5 +1,6 @@
 const Post = require('../models/Post');
 const User = require('../models/User');
+const Notification = require('../models/Notification');
 
 // @desc    Get all posts with pagination and filtering
 // @route   GET /api/posts
@@ -302,6 +303,67 @@ const unlikePost = async (req, res) => {
   }
 };
 
+// @desc    Add a reaction to a post
+// @route   POST /api/posts/:id/reaction
+// @access  Private
+const addReactionToPost = async (req, res) => {
+  try {
+    const { emoji } = req.body;
+    if (!emoji) {
+      return res.status(400).json({ success: false, message: 'Emoji is required' });
+    }
+    const post = await Post.findById(req.params.id);
+    if (!post) {
+      return res.status(404).json({ success: false, message: 'Post not found' });
+    }
+    if (!post.reactions.has(emoji)) {
+      post.reactions.set(emoji, []);
+    }
+    const users = post.reactions.get(emoji).map(id => id.toString());
+    let reacted = false;
+    if (!users.includes(req.user.id)) {
+      post.reactions.get(emoji).push(req.user.id);
+      await post.save();
+      reacted = true;
+    }
+    // Notification logic: only notify if this is a new reaction and not self
+    if (reacted && post.author.toString() !== req.user.id) {
+      await Notification.create({
+        user: post.author,
+        type: 'reaction',
+        data: { post: post._id, emoji, actor: req.user.id },
+      });
+    }
+    res.json({ success: true, reactions: post.reactions });
+  } catch (error) {
+    res.status(500).json({ success: false, message: 'Error adding reaction', error: error.message });
+  }
+};
+
+// @desc    Remove a reaction from a post
+// @route   DELETE /api/posts/:id/reaction
+// @access  Private
+const removeReactionFromPost = async (req, res) => {
+  try {
+    const { emoji } = req.body;
+    if (!emoji) {
+      return res.status(400).json({ success: false, message: 'Emoji is required' });
+    }
+    const post = await Post.findById(req.params.id);
+    if (!post) {
+      return res.status(404).json({ success: false, message: 'Post not found' });
+    }
+    if (post.reactions.has(emoji)) {
+      const filtered = post.reactions.get(emoji).filter(id => id.toString() !== req.user.id);
+      post.reactions.set(emoji, filtered);
+      await post.save();
+    }
+    res.json({ success: true, reactions: post.reactions });
+  } catch (error) {
+    res.status(500).json({ success: false, message: 'Error removing reaction', error: error.message });
+  }
+};
+
 // @desc    Get current user's posts
 // @route   GET /api/posts/me/posts
 // @access  Private
@@ -386,6 +448,35 @@ const getPostsByAuthor = async (req, res) => {
   }
 };
 
+const getPostAnalytics = async (req, res) => {
+  try {
+    const post = await Post.findById(req.params.id);
+    if (!post) {
+      return res.status(404).json({ success: false, message: 'Post not found' });
+    }
+    // Count reactions per emoji
+    const reactionCounts = {};
+    if (post.reactions) {
+      for (const [emoji, users] of post.reactions.entries()) {
+        reactionCounts[emoji] = users.length;
+      }
+    }
+    // Count comments
+    const commentCount = await require('../models/Comment').countDocuments({ post: post._id });
+    res.json({
+      success: true,
+      analytics: {
+        views: post.views,
+        likeCount: post.likes.length,
+        reactionCounts,
+        commentCount,
+      }
+    });
+  } catch (error) {
+    res.status(500).json({ success: false, message: 'Error fetching analytics', error: error.message });
+  }
+};
+
 module.exports = {
   getPosts,
   getPost,
@@ -395,5 +486,8 @@ module.exports = {
   likePost,
   unlikePost,
   getMyPosts,
-  getPostsByAuthor
+  getPostsByAuthor,
+  addReactionToPost,
+  removeReactionFromPost,
+  getPostAnalytics
 }; 

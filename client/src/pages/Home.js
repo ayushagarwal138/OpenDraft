@@ -3,11 +3,17 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { useMediaQuery } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
 import { Search, FilterList, Clear, Person, CalendarToday, Visibility, Favorite, TrendingUp, BookmarkBorder, Share } from '@mui/icons-material';
-import { Grid, Card, Skeleton, CardContent, Box, Container, Fade, Typography, TextField, FormControl, InputLabel, Select, MenuItem, Button, Alert, Grow, CardMedia, Chip, Pagination, IconButton } from '@mui/material';import { Link as RouterLink } from 'react-router-dom';
+import { Grid, Card, Skeleton, CardContent, Box, Container, Fade, Typography, TextField, FormControl, InputLabel, Select, MenuItem, Button, Alert, Grow, CardMedia, Chip, Pagination, IconButton, Tabs, Tab } from '@mui/material';import { Link as RouterLink } from 'react-router-dom';
 import postService from '../services/postService';
-import Logo from '../components/common/Logo';
+import { useAuth } from '../context/AuthContext';
+import { followUser, unfollowUser, getFollowing } from '../services/userService';
+import { useToast } from '../contexts/ToastContext';
 
 const Home = () => {
+  const { user } = useAuth();
+  const { showSuccess, showError } = useToast();
+  const [feedTab, setFeedTab] = useState('all');
+  const [followingIds, setFollowingIds] = useState([]);
   const [posts, setPosts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -16,27 +22,75 @@ const Home = () => {
   const [search, setSearch] = useState('');
   const [category, setCategory] = useState('');
   const [categories, setCategories] = useState([]);
+  const [followingAuthors, setFollowingAuthors] = useState([]);
+  const [followingLoading, setFollowingLoading] = useState({}); // authorId => bool
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
 
   const limit = 9;
 
+  // Fetch following IDs for personalized feed
+  useEffect(() => {
+    if (feedTab === 'following' && user?._id) {
+      getFollowing(user._id).then(res => {
+        setFollowingIds(res.data.following.map(u => u._id));
+      });
+    }
+  }, [feedTab, user]);
+
+  // Fetch following authors for follow/unfollow buttons
+  useEffect(() => {
+    if (user?._id) {
+      getFollowing(user._id).then(res => {
+        setFollowingAuthors(res.data.following.map(u => u._id));
+      });
+    } else {
+      setFollowingAuthors([]);
+    }
+  }, [user]);
+
+  const handleFollow = async (authorId) => {
+    if (!user) return;
+    setFollowingLoading(prev => ({ ...prev, [authorId]: true }));
+    try {
+      await followUser(authorId);
+      setFollowingAuthors(prev => [...prev, authorId]);
+      showSuccess('Followed author');
+    } catch (e) {
+      showError('Failed to follow author');
+    } finally {
+      setFollowingLoading(prev => ({ ...prev, [authorId]: false }));
+    }
+  };
+  const handleUnfollow = async (authorId) => {
+    if (!user) return;
+    setFollowingLoading(prev => ({ ...prev, [authorId]: true }));
+    try {
+      await unfollowUser(authorId);
+      setFollowingAuthors(prev => prev.filter(id => id !== authorId));
+      showSuccess('Unfollowed author');
+    } catch (e) {
+      showError('Failed to unfollow author');
+    } finally {
+      setFollowingLoading(prev => ({ ...prev, [authorId]: false }));
+    }
+  };
+
+  // Fetch posts (all or following)
   const fetchPosts = useCallback(async () => {
     try {
       setLoading(true);
-      const params = {
-        page,
-        limit,
-        ...(search && { search }),
-        ...(category && { category })
-      };
-
+      let params = { page, limit };
+      if (feedTab === 'all') {
+        if (search) params.search = search;
+        if (category) params.category = category;
+      } else if (feedTab === 'following' && followingIds.length > 0) {
+        params.author = followingIds.join(',');
+      }
       const response = await postService.getPosts(params);
       setPosts(response.data.data);
       setTotalPages(Math.ceil(response.data.total / limit));
-      
-      // Extract unique categories for filter
-      if (response.data.data.length > 0) {
+      if (response.data.data.length > 0 && feedTab === 'all') {
         const uniqueCategories = [...new Set(response.data.data.map(post => post.category))];
         setCategories(uniqueCategories);
       }
@@ -45,11 +99,11 @@ const Home = () => {
     } finally {
       setLoading(false);
     }
-  }, [page, search, category, limit]);
+  }, [page, search, category, limit, feedTab, followingIds]);
 
   useEffect(() => {
     fetchPosts();
-  }, [page, search, category, fetchPosts]);
+  }, [page, search, category, fetchPosts, feedTab, followingIds]);
 
   const handlePageChange = (event, value) => {
     setPage(value);
@@ -126,12 +180,15 @@ const Home = () => {
 
   return (
     <Container maxWidth="lg" sx={{ py: 4 }}>
+      {/* Feed Tabs */}
+      <Tabs value={feedTab} onChange={(_, v) => setFeedTab(v)} centered sx={{ mb: 4 }}>
+        <Tab label="All" value="all" />
+        <Tab label="Following" value="following" disabled={!user} />
+      </Tabs>
       {/* Hero Section */}
       <Fade in timeout={800}>
         <Box sx={{ mb: 6, textAlign: 'center' }}>
-          <Box sx={{ mb: 3 }}>
-            <Logo height="80px" />
-          </Box>
+          {/* Removed large Logo per request */}
           <Typography 
             variant="h2" 
             component="h1" 
@@ -308,9 +365,40 @@ const Home = () => {
                         <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 2, flexWrap: 'wrap' }}>
                           <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
                             <Person fontSize="small" color="action" />
-                            <Typography variant="caption" color="text.secondary">
+                            <Typography
+                              component={RouterLink}
+                              to={post.author?._id ? `/profile/${post.author._id}` : '#'}
+                              variant="caption"
+                              color="text.secondary"
+                              sx={{ textDecoration: 'none', '&:hover': { textDecoration: 'underline' } }}
+                            >
                               {post.author?.name || 'Anonymous'}
                             </Typography>
+                            {user && post.author?._id && post.author._id !== user._id && (
+                              followingAuthors.includes(post.author._id) ? (
+                                <Button
+                                  size="small"
+                                  variant="outlined"
+                                  color="secondary"
+                                  sx={{ ml: 1, textTransform: 'none' }}
+                                  onClick={() => handleUnfollow(post.author._id)}
+                                  disabled={!!followingLoading[post.author._id]}
+                                >
+                                  {followingLoading[post.author._id] ? '...' : 'Unfollow'}
+                                </Button>
+                              ) : (
+                                <Button
+                                  size="small"
+                                  variant="contained"
+                                  color="primary"
+                                  sx={{ ml: 1, textTransform: 'none' }}
+                                  onClick={() => handleFollow(post.author._id)}
+                                  disabled={!!followingLoading[post.author._id]}
+                                >
+                                  {followingLoading[post.author._id] ? '...' : 'Follow'}
+                                </Button>
+                              )
+                            )}
                           </Box>
                           <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
                             <CalendarToday fontSize="small" color="action" />

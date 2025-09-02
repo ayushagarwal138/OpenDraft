@@ -1,6 +1,11 @@
 import axios from 'axios';
 
-const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:5001/api';
+const pickBaseUrl = (raw, fallback) => {
+  const s = (raw || fallback || '').split(/[ ,]+/).filter(Boolean);
+  return s[0] || fallback;
+};
+
+const API_URL = pickBaseUrl(process.env.REACT_APP_API_URL, 'http://localhost:5001/api');
 
 // Get auth token from localStorage
 const getAuthToken = () => localStorage.getItem('token');
@@ -82,6 +87,27 @@ export const resetPassword = async (token, password) => {
   return response;
 };
 
+// Follow a user
+export const followUser = async (userId) => {
+  const response = await api.post(`/users/${userId}/follow`);
+  return response;
+};
+// Unfollow a user
+export const unfollowUser = async (userId) => {
+  const response = await api.delete(`/users/${userId}/follow`);
+  return response;
+};
+// Get followers
+export const getFollowers = async (userId) => {
+  const response = await api.get(`/users/${userId}/followers`);
+  return response;
+};
+// Get following
+export const getFollowing = async (userId) => {
+  const response = await api.get(`/users/${userId}/following`);
+  return response;
+};
+
 const userService = {
   getAllUsers,
   getUserById,
@@ -93,6 +119,10 @@ const userService = {
   changePassword,
   forgotPassword,
   resetPassword,
+  followUser,
+  unfollowUser,
+  getFollowers,
+  getFollowing,
 };
 
 export default userService; 

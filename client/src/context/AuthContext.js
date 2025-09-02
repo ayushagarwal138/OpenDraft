@@ -113,7 +113,7 @@ export const AuthProvider = ({ children }) => {
         payload: { user, token }
       });
       
-      return { success: true };
+      return { success: true, user };
     } catch (error) {
       dispatch({
         type: 'AUTH_FAIL',
@@ -136,7 +136,7 @@ export const AuthProvider = ({ children }) => {
         payload: { user, token }
       });
       
-      return { success: true };
+      return { success: true, user };
     } catch (error) {
       dispatch({
         type: 'AUTH_FAIL',

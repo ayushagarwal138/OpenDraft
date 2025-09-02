@@ -3,7 +3,7 @@ import {
   AppBar,
   Toolbar,
   Typography,
-  Button,
+  Button as MUIButton,
   Box,
   IconButton,
   Menu,
@@ -35,6 +35,7 @@ import { useAuth } from '../../context/AuthContext';
 import NotificationSystem from '../common/NotificationSystem';
 import ThemeToggle from '../common/ThemeToggle';
 import Logo from '../common/Logo';
+import { Button as ShButton } from '../../components/ui/button';
 
 const Navbar = () => {
   const { user, isAuthenticated, logout } = useAuth();
@@ -67,8 +68,8 @@ const Navbar = () => {
 
   const navItems = [
     { text: 'Home', path: '/', icon: <Home /> },
-    { text: 'Dashboard', path: '/dashboard', icon: <Dashboard />, protected: true },
-    { text: 'Create Post', path: '/create-post', icon: <Create />, protected: true },
+    { text: user?.role === 'admin' ? 'Admin' : 'Dashboard', path: user?.role === 'admin' ? '/admin' : '/dashboard', icon: user?.role === 'admin' ? <AdminPanelSettings /> : <Dashboard />, protected: true },
+    ...(user?.role !== 'admin' ? [{ text: 'Create Post', path: '/create-post', icon: <Create />, protected: true }] : []),
   ];
 
   const renderDesktopNav = () => (
@@ -76,7 +77,7 @@ const Navbar = () => {
       {navItems.map((item) => {
         if (item.protected && !isAuthenticated) return null;
         return (
-          <Button
+          <MUIButton
             key={item.text}
             component={RouterLink}
             to={item.path}
@@ -90,9 +91,16 @@ const Navbar = () => {
             }}
           >
             {item.text}
-          </Button>
+          </MUIButton>
         );
       })}
+      {isAuthenticated && user?.role !== 'admin' && (
+        <RouterLink to="/create-post" style={{ textDecoration: 'none' }}>
+          <ShButton className="h-9 px-4 bg-blue-600 text-white hover:bg-blue-700">
+            Write
+          </ShButton>
+        </RouterLink>
+      )}
     </Box>
   );
 
@@ -198,6 +206,7 @@ const Navbar = () => {
           borderBottom: '1px solid',
           borderColor: 'divider',
           backdropFilter: 'blur(20px)',
+          boxShadow: '0 2px 8px rgba(0,0,0,0.04)', // subtle shadow
         }}
       >
         <Toolbar sx={{ justifyContent: 'space-between', px: { xs: 2, md: 4 } }}>
@@ -220,6 +229,9 @@ const Navbar = () => {
                 display: 'flex',
                 alignItems: 'center',
                 gap: 1,
+                fontWeight: 800, // bolder
+                fontSize: 22,
+                letterSpacing: 1,
                 '&:hover': {
                   opacity: 0.8,
                 },
@@ -230,7 +242,7 @@ const Navbar = () => {
           </Box>
 
           {/* Desktop Navigation */}
-          <Box sx={{ display: { xs: 'none', md: 'flex' }, alignItems: 'center', gap: 2 }}>
+          <Box sx={{ display: { xs: 'none', md: 'flex' }, alignItems: 'center', flex: 1, mx: 4 }}>
             {renderDesktopNav()}
           </Box>
 
@@ -297,17 +309,7 @@ const Navbar = () => {
                     </ListItemIcon>
                     Profile
                   </MenuItem>
-                  <MenuItem
-                    component={RouterLink}
-                    to="/dashboard"
-                    onClick={handleProfileMenuClose}
-                  >
-                    <ListItemIcon>
-                      <Dashboard fontSize="small" />
-                    </ListItemIcon>
-                    Dashboard
-                  </MenuItem>
-                  {user?.role === 'admin' && (
+                  {user?.role === 'admin' ? (
                     <MenuItem
                       component={RouterLink}
                       to="/admin"
@@ -316,7 +318,18 @@ const Navbar = () => {
                       <ListItemIcon>
                         <AdminPanelSettings fontSize="small" />
                       </ListItemIcon>
-                      Admin Panel
+                      Admin Dashboard
+                    </MenuItem>
+                  ) : (
+                    <MenuItem
+                      component={RouterLink}
+                      to="/dashboard"
+                      onClick={handleProfileMenuClose}
+                    >
+                      <ListItemIcon>
+                        <Dashboard fontSize="small" />
+                      </ListItemIcon>
+                      Dashboard
                     </MenuItem>
                   )}
                   <Divider />
@@ -330,7 +343,7 @@ const Navbar = () => {
               </>
             ) : (
               <Box sx={{ display: 'flex', gap: 1 }}>
-                <Button
+                <MUIButton
                   component={RouterLink}
                   to="/login"
                   variant="outlined"
@@ -339,8 +352,8 @@ const Navbar = () => {
                   sx={{ display: { xs: 'none', sm: 'flex' } }}
                 >
                   Login
-                </Button>
-                <Button
+                </MUIButton>
+                <MUIButton
                   component={RouterLink}
                   to="/register"
                   variant="contained"
@@ -348,7 +361,7 @@ const Navbar = () => {
                   startIcon={<PersonAdd />}
                 >
                   Register
-                </Button>
+                </MUIButton>
               </Box>
             )}
           </Box>

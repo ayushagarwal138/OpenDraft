@@ -1,6 +1,11 @@
 import axios from 'axios';
 
-const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:5001/api';
+const pickBaseUrl = (raw, fallback) => {
+  const s = (raw || fallback || '').split(/[ ,]+/).filter(Boolean);
+  return s[0] || fallback;
+};
+
+const API_URL = pickBaseUrl(process.env.REACT_APP_API_URL, 'http://localhost:5001/api');
 
 // Create axios instance
 const api = axios.create({
@@ -58,6 +63,17 @@ const commentService = {
   // Unlike comment
   unlikeComment: async (commentId) => {
     const response = await api.delete(`/comments/${commentId}/like`);
+    return response;
+  },
+
+  // React to comment (emoji)
+  reactToComment: async (commentId, emoji) => {
+    const response = await api.post(`/comments/${commentId}/reaction`, { emoji });
+    return response;
+  },
+  // Remove reaction from comment (emoji)
+  unreactToComment: async (commentId, emoji) => {
+    const response = await api.delete(`/comments/${commentId}/reaction`, { data: { emoji } });
     return response;
   },
 

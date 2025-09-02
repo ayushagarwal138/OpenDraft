@@ -1,288 +1,130 @@
-import React, { useState, useEffect, useMemo } from 'react';
-import {
-  Snackbar,
-  Box,
-  Typography,
-  IconButton,
-} from '@mui/material';
-import {
-  Close,
-  CheckCircle,
-  Error,
-  Warning,
-  Info,
-  Notifications
-} from '@mui/icons-material';
+import React, { useEffect, useState } from 'react';
+import { IconButton, Badge, Menu, MenuItem, ListItemText, ListItemIcon, Typography, CircularProgress, Divider } from '@mui/material';
+import NotificationsIcon from '@mui/icons-material/Notifications';
+import CheckIcon from '@mui/icons-material/Check';
+import DoneAllIcon from '@mui/icons-material/DoneAll';
+import { useAuth } from '../../context/AuthContext';
+import axios from 'axios';
+
+const pickBaseUrl = (raw, fallback) => {
+  const s = (raw || fallback || '').split(/[ ,]+/).filter(Boolean);
+  return s[0] || fallback;
+};
+
+const API_URL = pickBaseUrl(process.env.REACT_APP_API_URL, 'http://localhost:5001/api');
 
 const NotificationSystem = () => {
+  const { user } = useAuth();
+  const [anchorEl, setAnchorEl] = useState(null);
   const [notifications, setNotifications] = useState([]);
-  const [open, setOpen] = useState(false);
+  const [loading, setLoading] = useState(false);
 
-
-  // Mock notifications - in a real app, these would come from your backend
-  const mockNotifications = useMemo(() => [
-    {
-      id: 1,
-      type: 'success',
-      title: 'Post Published Successfully',
-      message: 'Your post "Getting Started with React" has been published and is now live.',
-      timestamp: new Date(Date.now() - 1000 * 60 * 5), // 5 minutes ago
-      read: false
-    },
-    {
-      id: 2,
-      type: 'info',
-      title: 'New Comment',
-      message: 'John Doe commented on your post "Advanced JavaScript Tips".',
-      timestamp: new Date(Date.now() - 1000 * 60 * 15), // 15 minutes ago
-      read: false
-    },
-    {
-      id: 3,
-      type: 'warning',
-      title: 'Draft Saved',
-      message: 'Your draft "Web Development Best Practices" has been auto-saved.',
-      timestamp: new Date(Date.now() - 1000 * 60 * 30), // 30 minutes ago
-      read: true
+  const fetchNotifications = async () => {
+    if (!user) return;
+    setLoading(true);
+    try {
+      const token = localStorage.getItem('token');
+      const res = await axios.get(`${API_URL}/notifications`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      const list = (res.data.data || []).map(n => ({ ...n, read: n.isRead }));
+      setNotifications(list);
+    } catch (err) {
+      // Optionally handle error
+    } finally {
+      setLoading(false);
     }
-  ], [])
+  };
 
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => {
-    setNotifications(mockNotifications);
-  }, [mockNotifications]);
+    if (!user) return;
+    fetchNotifications();
+    const interval = setInterval(fetchNotifications, 60000);
+    return () => clearInterval(interval);
+  }, [user]);
 
-  const getIcon = (type) => {
-    switch (type) {
-      case 'success':
-        return <CheckCircle />;
-      case 'error':
-        return <Error />;
-      case 'warning':
-        return <Warning />;
-      case 'info':
-        return <Info />;
-      default:
-        return <Notifications />;
-    }
+  const handleOpen = (event) => {
+    setAnchorEl(event.currentTarget);
+    fetchNotifications();
+  };
+  const handleClose = () => setAnchorEl(null);
+
+  const handleMarkRead = async (id) => {
+    const token = localStorage.getItem('token');
+    await axios.put(`${API_URL}/notifications/${id}/read`, {}, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    setNotifications((prev) => prev.map(n => n._id === id ? { ...n, read: true } : n));
   };
 
-  const getSeverity = (type) => {
-    switch (type) {
-      case 'success':
-        return 'success';
-      case 'error':
-        return 'error';
-      case 'warning':
-        return 'warning';
-      case 'info':
-        return 'info';
-      default:
-        return 'info';
-    }
-  };
-
-  const formatTimeAgo = (timestamp) => {
-    const now = new Date();
-    const diff = now - timestamp;
-    const minutes = Math.floor(diff / (1000 * 60));
-    const hours = Math.floor(diff / (1000 * 60 * 60));
-    const days = Math.floor(diff / (1000 * 60 * 60 * 24));
-
-    if (days > 0) return `${days}d ago`;
-    if (hours > 0) return `${hours}h ago`;
-    if (minutes > 0) return `${minutes}m ago`;
-    return 'Just now';
-  };
-
-  const handleClose = (event, reason) => {
-    if (reason === 'clickaway') {
-      return;
-    }
-    setOpen(false);
-  };
-
-  const markAsRead = (notificationId) => {
-    setNotifications(prev => 
-      prev.map(notif => 
-        notif.id === notificationId 
-          ? { ...notif, read: true }
-          : notif
-      )
-    );
+  const handleMarkAllRead = async () => {
+    const token = localStorage.getItem('token');
+    await axios.put(`${API_URL}/notifications/mark-all-read`, {}, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    setNotifications(prev => prev.map(n => ({ ...n, read: true })));
   };
 
   const unreadCount = notifications.filter(n => !n.read).length;
 
+  const renderNotificationText = (n) => {
+    switch (n.type) {
+      case 'comment':
+        return 'New comment on your post';
+      case 'reply':
+        return 'New reply to your comment';
+      case 'follow':
+        return 'New follower';
+      case 'reaction':
+        return `New reaction: ${n.data.emoji || ''}`;
+      default:
+        return n.type;
+    }
+  };
+
   return (
     <>
-      {/* Notification Bell with Badge */}
-      <Box sx={{ position: 'relative' }}>
-        <IconButton
-          color="primary"
-          onClick={() => setOpen(true)}
-          sx={{
-            position: 'relative',
-            '&:hover': {
-              backgroundColor: 'primary.light',
-            },
-          }}
-        >
-          <Notifications />
-          {unreadCount > 0 && (
-            <Box
-              sx={{
-                position: 'absolute',
-                top: -4,
-                right: -4,
-                backgroundColor: 'error.main',
-                color: 'white',
-                borderRadius: '50%',
-                width: 20,
-                height: 20,
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                fontSize: '0.75rem',
-                fontWeight: 600,
-              }}
-            >
-              {unreadCount > 9 ? '9+' : unreadCount}
-            </Box>
-          )}
-        </IconButton>
-      </Box>
-
-      {/* Notifications Panel */}
-      <Snackbar
-        open={open}
+      <IconButton color="primary" onClick={handleOpen} sx={{ position: 'relative' }}>
+        <Badge badgeContent={unreadCount} color="error">
+          <NotificationsIcon />
+        </Badge>
+      </IconButton>
+      <Menu
+        anchorEl={anchorEl}
+        open={Boolean(anchorEl)}
         onClose={handleClose}
-        anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
-        sx={{ mt: 8 }}
+        PaperProps={{ sx: { minWidth: 340 } }}
       >
-        <Box
-          sx={{
-            width: 400,
-            maxHeight: 500,
-            backgroundColor: 'background.paper',
-            borderRadius: 2,
-            boxShadow: '0 8px 32px rgba(0, 0, 0, 0.12)',
-            border: '1px solid',
-            borderColor: 'divider',
-            overflow: 'hidden',
-          }}
-        >
-          {/* Header */}
-          <Box
-            sx={{
-              p: 2,
-              borderBottom: '1px solid',
-              borderColor: 'divider',
-              backgroundColor: 'primary.main',
-              color: 'white',
-            }}
-          >
-            <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-              <Typography variant="h6" sx={{ fontWeight: 600 }}>
-                Notifications
-              </Typography>
-              <IconButton
-                size="small"
-                onClick={handleClose}
-                sx={{ color: 'white' }}
-              >
-                <Close />
-              </IconButton>
-            </Box>
-            {unreadCount > 0 && (
-              <Typography variant="body2" sx={{ mt: 0.5 }}>
-                {unreadCount} unread notification{unreadCount !== 1 ? 's' : ''}
-              </Typography>
+        <MenuItem disabled>
+          <Typography variant="subtitle2">Notifications</Typography>
+        </MenuItem>
+        <MenuItem onClick={handleMarkAllRead} disabled={unreadCount === 0}>
+          <ListItemIcon sx={{ minWidth: 32 }}>
+            <DoneAllIcon fontSize="small" />
+          </ListItemIcon>
+          <ListItemText primary="Mark all as read" />
+        </MenuItem>
+        <Divider />
+        {loading ? (
+          <MenuItem><CircularProgress size={20} /></MenuItem>
+        ) : notifications.length === 0 ? (
+          <MenuItem disabled>No notifications</MenuItem>
+        ) : notifications.map((n) => (
+          <MenuItem key={n._id} selected={!n.read} sx={{ alignItems: 'flex-start' }}>
+            <ListItemText
+              primary={renderNotificationText(n)}
+              secondary={new Date(n.createdAt).toLocaleString()}
+            />
+            {!n.read && (
+              <ListItemIcon sx={{ minWidth: 32 }}>
+                <IconButton size="small" onClick={() => handleMarkRead(n._id)}>
+                  <CheckIcon fontSize="small" />
+                </IconButton>
+              </ListItemIcon>
             )}
-          </Box>
-
-          {/* Notifications List */}
-          <Box sx={{ maxHeight: 400, overflow: 'auto' }}>
-            {notifications.length === 0 ? (
-              <Box sx={{ p: 3, textAlign: 'center' }}>
-                <Typography variant="body2" color="text.secondary">
-                  No notifications yet
-                </Typography>
-              </Box>
-            ) : (
-              notifications.map((notification) => (
-                <Box
-                  key={notification.id}
-                  sx={{
-                    p: 2,
-                    borderBottom: '1px solid',
-                    borderColor: 'divider',
-                    backgroundColor: notification.read ? 'transparent' : 'primary.light',
-                    cursor: 'pointer',
-                    '&:hover': {
-                      backgroundColor: 'action.hover',
-                    },
-                  }}
-                  onClick={() => markAsRead(notification.id)}
-                >
-                  <Box sx={{ display: 'flex', gap: 2 }}>
-                    <Box
-                      sx={{
-                        color: `${getSeverity(notification.type)}.main`,
-                        mt: 0.5,
-                      }}
-                    >
-                      {getIcon(notification.type)}
-                    </Box>
-                    <Box sx={{ flex: 1 }}>
-                      <Typography variant="subtitle2" sx={{ fontWeight: 600, mb: 0.5 }}>
-                        {notification.title}
-                      </Typography>
-                      <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
-                        {notification.message}
-                      </Typography>
-                      <Typography variant="caption" color="text.secondary">
-                        {formatTimeAgo(notification.timestamp)}
-                      </Typography>
-                    </Box>
-                    {!notification.read && (
-                      <Box
-                        sx={{
-                          width: 8,
-                          height: 8,
-                          borderRadius: '50%',
-                          backgroundColor: 'primary.main',
-                          mt: 1,
-                        }}
-                      />
-                    )}
-                  </Box>
-                </Box>
-              ))
-            )}
-          </Box>
-
-          {/* Footer */}
-          {notifications.length > 0 && (
-            <Box
-              sx={{
-                p: 2,
-                borderTop: '1px solid',
-                borderColor: 'divider',
-                textAlign: 'center',
-              }}
-            >
-              <Typography
-                variant="body2"
-                color="primary.main"
-                sx={{ cursor: 'pointer', fontWeight: 500 }}
-              >
-                Mark all as read
-              </Typography>
-            </Box>
-          )}
-        </Box>
-      </Snackbar>
+          </MenuItem>
+        ))}
+      </Menu>
     </>
   );
 };

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation, Link as RouterLink } from 'react-router-dom';
 import {
   Container,
@@ -11,6 +11,9 @@ import {
   Alert,
   CircularProgress
 } from '@mui/material';
+import { IconButton, InputAdornment } from '@mui/material';
+import Visibility from '@mui/icons-material/Visibility';
+import VisibilityOff from '@mui/icons-material/VisibilityOff';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
@@ -22,9 +25,17 @@ const schema = yup.object({
 }).required();
 
 const Login = () => {
-  const { login, error } = useAuth();
+  const { login, error, isAuthenticated, user } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
+  const [showPassword, setShowPassword] = useState(false);
+
+  useEffect(() => {
+    if (isAuthenticated) {
+      const defaultTarget = user?.role === 'admin' ? '/admin' : '/dashboard';
+      navigate(defaultTarget, { replace: true });
+    }
+  }, [isAuthenticated, user?.role, navigate]);
   const [loading, setLoading] = useState(false);
 
   const {
@@ -46,7 +57,8 @@ const Login = () => {
     try {
       const result = await login(data);
       if (result.success) {
-        navigate(from, { replace: true });
+        const target = result.user?.role === 'admin' ? '/admin' : from;
+        navigate(target, { replace: true });
       }
     } catch (err) {
       // Error is handled by the auth context
@@ -89,11 +101,20 @@ const Login = () => {
             {...register('password')}
             fullWidth
             label="Password"
-            type="password"
+            type={showPassword ? 'text' : 'password'}
             margin="normal"
             error={!!errors.password}
             helperText={errors.password?.message}
             disabled={loading}
+            InputProps={{
+              endAdornment: (
+                <InputAdornment position="end">
+                  <IconButton onClick={() => setShowPassword(p => !p)} edge="end">
+                    {showPassword ? <VisibilityOff /> : <Visibility />}
+                  </IconButton>
+                </InputAdornment>
+              )
+            }}
           />
 
           <Button

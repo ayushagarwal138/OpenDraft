@@ -4,13 +4,16 @@ const { protect, authorize, optionalAuth } = require('../middleware/auth');
 const { handleValidationErrors } = require('../middleware/validate');
 const {
   getComments,
+  getAllComments,
   getComment,
   createComment,
   updateComment,
   deleteComment,
   likeComment,
   unlikeComment,
-  moderateComment
+  moderateComment,
+  addReactionToComment,
+  removeReactionFromComment
 } = require('../controllers/commentController');
 
 const router = express.Router();
@@ -58,6 +61,9 @@ router.get('/post/:postId', queryValidation, handleValidationErrors, optionalAut
 // Protected routes (require authentication)
 router.use(protect);
 
+// Admin only routes (place BEFORE dynamic :id to avoid '/all' matching ':id')
+router.get('/all', authorize('admin'), queryValidation, handleValidationErrors, getAllComments);
+
 // Comment CRUD operations
 router.post('/', createCommentValidation, handleValidationErrors, createComment);
 router.get('/:id', getComment);
@@ -71,7 +77,8 @@ router.delete('/:id/like', unlikeComment);
 // Moderation routes (Admin/Author only)
 router.put('/:id/moderate', authorize('author', 'admin'), moderateComment);
 
-// Admin only routes
-router.get('/all', authorize('admin'), queryValidation, handleValidationErrors, getComments);
+// Reaction routes
+router.post('/:id/reaction', addReactionToComment);
+router.delete('/:id/reaction', removeReactionFromComment);
 
 module.exports = router; 

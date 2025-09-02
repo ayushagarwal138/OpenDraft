@@ -55,8 +55,17 @@ const postSchema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User'
   }],
+  reactions: {
+    type: Map,
+    of: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
+    default: {},
+  },
   publishedAt: {
     type: Date
+  },
+  scheduledDate: {
+    type: Date,
+    default: null
   },
   seoTitle: {
     type: String,

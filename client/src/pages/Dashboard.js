@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 
 import { Link as RouterLink } from 'react-router-dom';
-import { Refresh, Add, Sort, Visibility, Edit, Delete } from '@mui/icons-material';
+import { Refresh, Add, Sort, Visibility, Edit, Delete, AdminPanelSettings } from '@mui/icons-material';
 import { Container, Box, CircularProgress, Typography, Alert, Grid, Paper, Button, Tabs, Tab, LinearProgress, TableContainer, Table, TableHead, TableRow, TableCell, TableBody, Chip, IconButton, Dialog, DialogTitle, DialogContent, DialogActions } from '@mui/material';import { useAuth } from '../context/AuthContext';
 import postService from '../services/postService';
 // eslint-disable-next-line no-unused-vars
@@ -129,9 +129,25 @@ const Dashboard = () => {
     <Container maxWidth="lg" sx={{ py: 4 }}>
       {/* Header */}
       <Box sx={{ mb: 4 }}>
-        <Typography variant="h4" component="h1" gutterBottom>
-          Dashboard
-        </Typography>
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 2 }}>
+          <Typography variant="h4" component="h1">
+            My Dashboard
+          </Typography>
+          {user?.role === 'admin' && (
+            <>
+              <Typography variant="body2" color="text.secondary">→</Typography>
+              <Button
+                component={RouterLink}
+                to="/admin"
+                variant="outlined"
+                size="small"
+                startIcon={<AdminPanelSettings />}
+              >
+                Admin Dashboard
+              </Button>
+            </>
+          )}
+        </Box>
         <Typography variant="body1" color="text.secondary">
           Welcome back, {user?.name}! Manage your posts and account here.
         </Typography>

@@ -11,6 +11,9 @@ import {
   Alert,
   CircularProgress
 } from '@mui/material';
+import { IconButton, InputAdornment } from '@mui/material';
+import Visibility from '@mui/icons-material/Visibility';
+import VisibilityOff from '@mui/icons-material/VisibilityOff';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
@@ -26,8 +29,16 @@ const schema = yup.object({
 }).required();
 
 const Register = () => {
-  const { register: registerUser, error, clearError } = useAuth();
+  const { register: registerUser, error, clearError, isAuthenticated } = useAuth();
   const navigate = useNavigate();
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirm, setShowConfirm] = useState(false);
+
+  useEffect(() => {
+    if (isAuthenticated) {
+      navigate('/dashboard', { replace: true });
+    }
+  }, [isAuthenticated, navigate]);
   const [loading, setLoading] = useState(false);
 
   const {
@@ -51,11 +62,13 @@ const Register = () => {
     setLoading(true);
     try {
       const { confirmPassword, ...userData } = data;
+      console.log('Submitting registration data:', userData);
       const result = await registerUser(userData);
       if (result.success) {
         navigate('/dashboard');
       }
     } catch (err) {
+      console.error('Registration error:', err);
       // Error is handled by the auth context
     } finally {
       setLoading(false);
@@ -106,22 +119,40 @@ const Register = () => {
             {...register('password')}
             fullWidth
             label="Password"
-            type="password"
+            type={showPassword ? 'text' : 'password'}
             margin="normal"
             error={!!errors.password}
             helperText={errors.password?.message}
             disabled={loading}
+            InputProps={{
+              endAdornment: (
+                <InputAdornment position="end">
+                  <IconButton onClick={() => setShowPassword(p => !p)} edge="end">
+                    {showPassword ? <VisibilityOff /> : <Visibility />}
+                  </IconButton>
+                </InputAdornment>
+              )
+            }}
           />
 
           <TextField
             {...register('confirmPassword')}
             fullWidth
             label="Confirm Password"
-            type="password"
+            type={showConfirm ? 'text' : 'password'}
             margin="normal"
             error={!!errors.confirmPassword}
             helperText={errors.confirmPassword?.message}
             disabled={loading}
+            InputProps={{
+              endAdornment: (
+                <InputAdornment position="end">
+                  <IconButton onClick={() => setShowConfirm(p => !p)} edge="end">
+                    {showConfirm ? <VisibilityOff /> : <Visibility />}
+                  </IconButton>
+                </InputAdornment>
+              )
+            }}
           />
 
           <Button

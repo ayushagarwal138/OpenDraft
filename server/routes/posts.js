@@ -11,7 +11,10 @@ const {
   likePost,
   unlikePost,
   getMyPosts,
-  getPostsByAuthor
+  getPostsByAuthor,
+  addReactionToPost,
+  removeReactionFromPost,
+  getPostAnalytics
 } = require('../controllers/postController');
 
 const router = express.Router();
@@ -104,7 +107,7 @@ const queryValidation = [
 
 // Public routes
 router.get('/', queryValidation, handleValidationErrors, optionalAuth, getPosts);
-router.get('/:slug', optionalAuth, getPost);
+// Place more specific/static routes BEFORE dynamic slug to avoid collisions
 router.get('/author/:authorId', queryValidation, handleValidationErrors, getPostsByAuthor);
 
 // Protected routes (require authentication)
@@ -116,11 +119,20 @@ router.put('/:id', authorize('author', 'admin'), updatePostValidation, handleVal
 router.delete('/:id', authorize('author', 'admin'), deletePost);
 router.get('/me/posts', getMyPosts);
 
-// Admin only routes
+// Admin only routes (place before slug route to avoid catching 'all' as slug)
 router.get('/all', authorize('admin'), queryValidation, handleValidationErrors, getPosts);
 
 // Like/Unlike routes
 router.post('/:id/like', likePost);
 router.delete('/:id/like', unlikePost);
+
+// Reaction routes
+router.post('/:id/reaction', addReactionToPost);
+router.delete('/:id/reaction', removeReactionFromPost);
+
+router.get('/:id/analytics', protect, getPostAnalytics);
+
+// Dynamic slug route should be last
+router.get('/:slug', optionalAuth, getPost);
 
 module.exports = router; 

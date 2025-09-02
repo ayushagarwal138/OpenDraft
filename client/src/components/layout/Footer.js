@@ -183,6 +183,10 @@ const Footer = () => {
           <Box sx={{ display: 'flex', gap: 1 }}>
             <IconButton
               size="small"
+              component="a"
+              href="https://github.com/yourprofile"
+              target="_blank"
+              rel="noopener noreferrer"
               sx={{
                 color: 'text.secondary',
                 '&:hover': {
@@ -195,6 +199,10 @@ const Footer = () => {
             </IconButton>
             <IconButton
               size="small"
+              component="a"
+              href="https://twitter.com/yourprofile"
+              target="_blank"
+              rel="noopener noreferrer"
               sx={{
                 color: 'text.secondary',
                 '&:hover': {
@@ -207,6 +215,10 @@ const Footer = () => {
             </IconButton>
             <IconButton
               size="small"
+              component="a"
+              href="https://linkedin.com/in/yourprofile"
+              target="_blank"
+              rel="noopener noreferrer"
               sx={{
                 color: 'text.secondary',
                 '&:hover': {
@@ -219,6 +231,8 @@ const Footer = () => {
             </IconButton>
             <IconButton
               size="small"
+              component="a"
+              href="mailto:your@email.com"
               sx={{
                 color: 'text.secondary',
                 '&:hover': {
@@ -234,7 +248,7 @@ const Footer = () => {
 
         {/* Made with Love */}
         <Box sx={{ textAlign: 'center', mt: 3 }}>
-          <Typography variant="caption" color="text.secondary">
+          <Typography variant="subtitle2" color="primary" sx={{ fontWeight: 700, letterSpacing: 1 }}>
             Made with ❤️ using React, Node.js, and MongoDB
           </Typography>
         </Box>

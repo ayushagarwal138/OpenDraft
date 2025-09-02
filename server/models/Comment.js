@@ -31,6 +31,11 @@ const commentSchema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User'
   }],
+  reactions: {
+    type: Map,
+    of: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
+    default: {},
+  },
   isEdited: {
     type: Boolean,
     default: false

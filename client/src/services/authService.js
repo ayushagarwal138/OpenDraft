@@ -1,6 +1,11 @@
 import axios from 'axios';
 
-const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:5001/api';
+const pickBaseUrl = (raw, fallback) => {
+  const s = (raw || fallback || '').split(/[ ,]+/).filter(Boolean);
+  return s[0] || fallback;
+};
+
+const API_URL = pickBaseUrl(process.env.REACT_APP_API_URL, 'http://localhost:5001/api');
 
 // Create axios instance
 const api = axios.create({

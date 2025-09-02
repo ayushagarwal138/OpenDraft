@@ -1,4 +1,5 @@
 const User = require('../models/User');
+const Notification = require('../models/Notification');
 
 // @desc    Get all users (Admin only)
 // @route   GET /api/users
@@ -191,10 +192,102 @@ const updateUserRole = async (req, res) => {
   }
 };
 
+// @desc    Follow a user
+// @route   POST /api/users/:id/follow
+// @access  Private
+const followUser = async (req, res) => {
+  try {
+    const userToFollow = await User.findById(req.params.id);
+    const currentUser = await User.findById(req.user.id);
+    if (!userToFollow) {
+      return res.status(404).json({ success: false, message: 'User not found' });
+    }
+    if (userToFollow._id.equals(currentUser._id)) {
+      return res.status(400).json({ success: false, message: 'You cannot follow yourself' });
+    }
+    let followed = false;
+    if (!currentUser.following.includes(userToFollow._id)) {
+      currentUser.following.push(userToFollow._id);
+      await currentUser.save();
+      followed = true;
+    }
+    if (!userToFollow.followers.includes(currentUser._id)) {
+      userToFollow.followers.push(currentUser._id);
+      await userToFollow.save();
+      followed = true;
+    }
+    // Notification logic: only notify if this is a new follow
+    if (followed) {
+      await Notification.create({
+        user: userToFollow._id,
+        type: 'follow',
+        data: { actor: currentUser._id },
+      });
+    }
+    res.json({ success: true, message: 'Followed user', following: currentUser.following });
+  } catch (error) {
+    res.status(500).json({ success: false, message: 'Error following user', error: error.message });
+  }
+};
+
+// @desc    Unfollow a user
+// @route   DELETE /api/users/:id/follow
+// @access  Private
+const unfollowUser = async (req, res) => {
+  try {
+    const userToUnfollow = await User.findById(req.params.id);
+    const currentUser = await User.findById(req.user.id);
+    if (!userToUnfollow) {
+      return res.status(404).json({ success: false, message: 'User not found' });
+    }
+    currentUser.following = currentUser.following.filter(id => !id.equals(userToUnfollow._id));
+    await currentUser.save();
+    userToUnfollow.followers = userToUnfollow.followers.filter(id => !id.equals(currentUser._id));
+    await userToUnfollow.save();
+    res.json({ success: true, message: 'Unfollowed user', following: currentUser.following });
+  } catch (error) {
+    res.status(500).json({ success: false, message: 'Error unfollowing user', error: error.message });
+  }
+};
+
+// @desc    Get followers of a user
+// @route   GET /api/users/:id/followers
+// @access  Public
+const getFollowers = async (req, res) => {
+  try {
+    const user = await User.findById(req.params.id).populate('followers', 'name avatar');
+    if (!user) {
+      return res.status(404).json({ success: false, message: 'User not found' });
+    }
+    res.json({ success: true, followers: user.followers });
+  } catch (error) {
+    res.status(500).json({ success: false, message: 'Error fetching followers', error: error.message });
+  }
+};
+
+// @desc    Get following of a user
+// @route   GET /api/users/:id/following
+// @access  Public
+const getFollowing = async (req, res) => {
+  try {
+    const user = await User.findById(req.params.id).populate('following', 'name avatar');
+    if (!user) {
+      return res.status(404).json({ success: false, message: 'User not found' });
+    }
+    res.json({ success: true, following: user.following });
+  } catch (error) {
+    res.status(500).json({ success: false, message: 'Error fetching following', error: error.message });
+  }
+};
+
 module.exports = {
   getUsers,
   getUser,
   updateUser,
   deleteUser,
-  updateUserRole
+  updateUserRole,
+  followUser,
+  unfollowUser,
+  getFollowers,
+  getFollowing
 }; 
