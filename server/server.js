@@ -42,7 +42,7 @@ console.log('CORS_ORIGIN:', process.env.CORS_ORIGIN);
 
 // Force CORS to allow Vercel frontend
 app.use(cors({
-  origin: ['https://open-draft-iota.vercel.app', 'http://localhost:3000', 'http://localhost:3001'],
+  origin: ['https://open-draft-iota.vercel.app', 'http://localhost:3000', 'http://localhost:3001', 'https://open-draft-topaz.vercel.app'],
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization']
