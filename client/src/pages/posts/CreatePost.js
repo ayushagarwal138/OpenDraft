@@ -63,6 +63,8 @@ const CreatePost = () => {
     keywords: '',
     slug: '',
   });
+  const [featuredImages, setFeaturedImages] = useState([]);
+  const [suggestions, setSuggestions] = useState([]);
   const [showPreview, setShowPreview] = useState(false);
   const [showSearch, setShowSearch] = useState(false);
   const [showScheduler, setShowScheduler] = useState(false);
@@ -118,6 +120,20 @@ const CreatePost = () => {
       setTags(saved.tags || []);
       setSeoData(saved.seoData || {});
     }
+    // Fetch live suggestions for search (top posts)
+    (async () => {
+      try {
+        const res = await postService.getPosts({ limit: 5 });
+        const items = (res.data?.data || []).map((p) => ({
+          title: p.title,
+          excerpt: p.excerpt || '',
+          category: p.category || 'General',
+        }));
+        setSuggestions(items);
+      } catch (_) {
+        setSuggestions([]);
+      }
+    })();
   }, [getSavedData, setValue]);
 
   // Keyboard shortcuts
@@ -158,6 +174,7 @@ const CreatePost = () => {
         content: content,
         tags,
         seo: seoData,
+        images: featuredImages,
         ...(scheduledDate && { scheduledDate }),
       };
 
@@ -183,6 +200,7 @@ const CreatePost = () => {
         status: 'draft',
         tags,
         seo: seoData,
+        images: featuredImages,
         ...(scheduledDate && { scheduledDate }),
       };
 
@@ -211,10 +229,27 @@ const CreatePost = () => {
     showSuccess('Template saved successfully!');
   };
 
-  const handleImageUpload = (images) => {
-    // Handle image upload - you can integrate with your image service
-            // Images uploaded successfully
-    showSuccess('Images uploaded successfully!');
+  const handleImageUpload = async (images) => {
+    // Normalize to an array of processed file objects from ImageUpload
+    const list = Array.isArray(images) ? images : (images ? [images] : []);
+    if (!list.length) return;
+    try {
+      const urls = [];
+      for (const item of list) {
+        const file = item?.file || item; // item may be File or { file, preview, ... }
+        if (file && file instanceof File) {
+          const res = await postService.uploadImage(file);
+          const url = res.data?.url || res.data?.path || res.data?.location;
+          if (url) urls.push(url);
+        }
+      }
+      if (urls.length) {
+        setFeaturedImages((prev) => [...prev, ...urls]);
+        showSuccess('Images uploaded successfully!');
+      }
+    } catch (e) {
+      showError('Failed to upload images');
+    }
   };
 
   const handleSEOChange = (newSeoData) => {
@@ -290,10 +325,7 @@ const CreatePost = () => {
           <AdvancedSearch
             onSearch={handleSearch}
             placeholder="Search posts, categories, tags..."
-            suggestions={[
-              { title: 'Sample Post 1', excerpt: 'This is a sample post...', category: 'Technology' },
-              { title: 'Sample Post 2', excerpt: 'Another sample post...', category: 'Lifestyle' },
-            ]}
+            suggestions={suggestions}
           />
         </Box>
       )}

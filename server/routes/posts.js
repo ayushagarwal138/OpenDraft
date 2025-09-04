@@ -113,8 +113,8 @@ router.get('/author/:authorId', queryValidation, handleValidationErrors, getPost
 // Protected routes (require authentication)
 router.use(protect);
 
-// Author/Admin only routes
-router.post('/', authorize('author', 'admin'), createPostValidation, handleValidationErrors, createPost);
+// Author/Admin only routes (temporarily allowing all authenticated users)
+router.post('/', protect, createPostValidation, handleValidationErrors, createPost);
 router.put('/:id', authorize('author', 'admin'), updatePostValidation, handleValidationErrors, updatePost);
 router.delete('/:id', authorize('author', 'admin'), deletePost);
 router.get('/me/posts', getMyPosts);
