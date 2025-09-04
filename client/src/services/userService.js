@@ -5,7 +5,7 @@ const pickBaseUrl = (raw, fallback) => {
   return s[0] || fallback;
 };
 
-const API_URL = pickBaseUrl(process.env.REACT_APP_API_URL, 'http://localhost:5001/api');
+const API_URL = pickBaseUrl(process.env.REACT_APP_API_URL,'http://localhost:5001/api');
 
 // Get auth token from localStorage
 const getAuthToken = () => localStorage.getItem('token');
