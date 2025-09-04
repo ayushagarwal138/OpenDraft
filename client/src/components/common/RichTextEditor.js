@@ -37,7 +37,10 @@ const RichTextEditor = ({ value, onChange, placeholder = "Write an amazing story
 
   const editor = useEditor({
     extensions: [
-      StarterKit,
+      StarterKit.configure({
+        // Avoid duplicate Link extension: we'll use the explicitly configured Link below
+        link: false,
+      }),
       Link.configure({
         openOnClick: false,
         HTMLAttributes: {
