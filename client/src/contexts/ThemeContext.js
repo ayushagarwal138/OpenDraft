@@ -14,13 +14,19 @@ export const useTheme = () => {
 
 export const ThemeProvider = ({ children }) => {
   const [mode, setMode] = useState(() => {
-    const savedMode = localStorage.getItem('theme-mode');
-    return savedMode || 'light';
+    if (typeof window !== 'undefined' && window.localStorage) {
+      const savedMode = localStorage.getItem('theme-mode');
+      return savedMode || 'light';
+    }
+    return 'light';
   });
 
   const [primaryColor, setPrimaryColor] = useState(() => {
-    const savedColor = localStorage.getItem('theme-primary-color');
-    return savedColor || '#1976d2';
+    if (typeof window !== 'undefined' && window.localStorage) {
+      const savedColor = localStorage.getItem('theme-primary-color');
+      return savedColor || '#1976d2';
+    }
+    return '#1976d2';
   });
 
   const theme = createTheme({
@@ -92,17 +98,23 @@ export const ThemeProvider = ({ children }) => {
   const toggleTheme = () => {
     const newMode = mode === 'light' ? 'dark' : 'light';
     setMode(newMode);
-    localStorage.setItem('theme-mode', newMode);
+    if (typeof window !== 'undefined' && window.localStorage) {
+      localStorage.setItem('theme-mode', newMode);
+    }
   };
 
   const changePrimaryColor = (color) => {
     setPrimaryColor(color);
-    localStorage.setItem('theme-primary-color', color);
+    if (typeof window !== 'undefined' && window.localStorage) {
+      localStorage.setItem('theme-primary-color', color);
+    }
   };
 
   useEffect(() => {
     // Apply theme to document body for better CSS variable support
-    document.body.setAttribute('data-theme', mode);
+    if (typeof document !== 'undefined' && document.body) {
+      document.body.setAttribute('data-theme', mode);
+    }
   }, [mode]);
 
   const value = {
