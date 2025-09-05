@@ -15,6 +15,10 @@ async function ensureDbConnection() {
 module.exports = async (req, res) => {
   try {
     await ensureDbConnection();
+    // Ensure the internal Express app sees the classic '/api/*' paths
+    if (!req.url.startsWith('/api')) {
+      req.url = `/api${req.url}`;
+    }
     return app(req, res);
   } catch (err) {
     console.error('API handler error:', err);

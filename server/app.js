@@ -33,6 +33,7 @@ app.use(cors({
   origin: [
     'https://open-draft-iota.vercel.app',
     'https://open-draft-topaz.vercel.app',
+    'https://open-draft-lime.vercel.app',
     'http://localhost:3000',
     'http://localhost:3001'
   ],
