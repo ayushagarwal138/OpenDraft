@@ -70,7 +70,7 @@ const PostDetail = () => {
   const fetchComments = useCallback(async (postId) => {
     if (!postId) return;
     try {
-      const response = await commentService.getComments(postId);
+      const response = await commentService.getCommentsByPost(postId);
       setComments(response.data.data);
     } catch (err) {
       console.error('Failed to fetch comments:', err);
@@ -152,9 +152,8 @@ const PostDetail = () => {
 
     setSubmittingComment(true);
     try {
-      const response = await commentService.createComment({
+      const response = await commentService.createComment(post._id, {
         content: commentText,
-        post: post._id
       });
       
       setComments(prev => [response.data.data, ...prev]);
