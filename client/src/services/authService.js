@@ -6,8 +6,8 @@ const pickBaseUrl = (raw, fallback) => {
 };
 
 let API_URL = pickBaseUrl(process.env.REACT_APP_API_URL,'http://localhost:5001/api');
-// Normalize: remove trailing slashes to prevent double-slash when joining with route paths
-API_URL = API_URL.replace(/\/+$/, '');
+// Normalize: remove trailing slashes and collapse duplicate slashes (preserving protocol)
+API_URL = API_URL.replace(/\/+$/, '').replace(/([^:]\/)\/+/, '$1');
 
 // Create axios instance
 const api = axios.create({
