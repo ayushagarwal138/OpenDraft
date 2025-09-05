@@ -6,7 +6,7 @@ const pickBaseUrl = (raw, fallback) => {
 };
 
 let API_URL = pickBaseUrl(process.env.REACT_APP_API_URL,'http://localhost:5001/api');
-API_URL = API_URL.replace(/\/+$/, '');
+API_URL = API_URL.replace(/\/+$/, '').replace(/([^:]\/)\/+/, '$1');
 
 // Create axios instance
 const api = axios.create({

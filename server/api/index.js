@@ -15,9 +15,13 @@ async function ensureDbConnection() {
 module.exports = async (req, res) => {
   try {
     await ensureDbConnection();
-    // Ensure the internal Express app sees the classic '/api/*' paths
-    if (!req.url.startsWith('/api')) {
-      req.url = `/api${req.url}`;
+    // Vercel already routes /api/* to this function, so we need to strip /api prefix
+    // for the Express app to handle routes correctly
+    if (req.url.startsWith('/api')) {
+      req.url = req.url.substring(4); // Remove '/api' prefix
+    }
+    if (req.url === '') {
+      req.url = '/';
     }
     return app(req, res);
   } catch (err) {
