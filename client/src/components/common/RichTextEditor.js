@@ -69,12 +69,14 @@ const RichTextEditor = ({ value, onChange, placeholder = "Write an amazing story
     ],
     content: value,
     onUpdate: ({ editor }) => {
-      onChange(editor.getHTML());
+      if (onChange && editor) {
+        onChange(editor.getHTML());
+      }
     },
-  });
+  }, [value, onChange]);
 
   if (!editor) {
-    return null;
+    return <div>Loading editor...</div>;
   }
 
   const handleFilesUpload = async (fileList) => {
@@ -107,6 +109,7 @@ const RichTextEditor = ({ value, onChange, placeholder = "Write an amazing story
   };
 
   const addLink = () => {
+    if (!editor) return;
     const url = window.prompt('Enter URL');
     if (url) {
       editor.chain().focus().setLink({ href: url }).run();
@@ -114,6 +117,7 @@ const RichTextEditor = ({ value, onChange, placeholder = "Write an amazing story
   };
 
   const addImage = () => {
+    if (!editor) return;
     const url = window.prompt('Enter image URL');
     if (url) {
       editor.chain().focus().setImage({ src: url }).run();
@@ -121,9 +125,11 @@ const RichTextEditor = ({ value, onChange, placeholder = "Write an amazing story
   };
 
   const addTable = () => {
+    if (!editor) return;
     editor.chain().focus().insertTable({ rows: 3, cols: 3, withHeaderRow: true }).run();
   };
   const addYoutube = () => {
+    if (!editor) return;
     const url = window.prompt('Enter YouTube URL');
     if (url) {
       editor.chain().focus().setYoutubeVideo({ src: url }).run();
@@ -143,22 +149,22 @@ const RichTextEditor = ({ value, onChange, placeholder = "Write an amazing story
         {/* Text Formatting */}
         <IconButton
           size="small"
-          onClick={() => editor.chain().focus().toggleBold().run()}
-          color={editor.isActive('bold') ? 'primary' : 'default'}
+          onClick={() => editor?.chain().focus().toggleBold().run()}
+          color={editor?.isActive('bold') ? 'primary' : 'default'}
         >
           <FormatBold />
         </IconButton>
         <IconButton
           size="small"
-          onClick={() => editor.chain().focus().toggleItalic().run()}
-          color={editor.isActive('italic') ? 'primary' : 'default'}
+          onClick={() => editor?.chain().focus().toggleItalic().run()}
+          color={editor?.isActive('italic') ? 'primary' : 'default'}
         >
           <FormatItalic />
         </IconButton>
         <IconButton
           size="small"
-          onClick={() => editor.chain().focus().toggleStrike().run()}
-          color={editor.isActive('strike') ? 'primary' : 'default'}
+          onClick={() => editor?.chain().focus().toggleStrike().run()}
+          color={editor?.isActive('strike') ? 'primary' : 'default'}
         >
           <FormatStrikethrough />
         </IconButton>
