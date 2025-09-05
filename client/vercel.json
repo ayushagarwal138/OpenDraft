@@ -1,0 +1,13 @@
+{
+  "version": 2,
+  "buildCommand": "npm install && npm run build",
+  "outputDirectory": "build",
+  "rewrites": [
+    {
+      "source": "/api/:path*",
+      "destination": "https://opendraft-backend.onrender.com/api/:path*"
+    }
+  ]
+}
+
+
