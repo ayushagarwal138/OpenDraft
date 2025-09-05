@@ -4,17 +4,20 @@ import { Box, Chip, Tooltip } from '@mui/material';
 const DEFAULT_EMOJIS = ['👍','❤️','😂','👏','🔥','🎉'];
 
 const ReactionBar = ({ type, id, reactions = {}, onReact, userId, disabled }) => {
+  const toCount = (value) => Array.isArray(value) ? value.length : Number(value) || 0;
+  const didUserReact = (value) => Array.isArray(value) && userId ? value.includes(userId) : false;
+
   const handleReact = (emoji) => {
     if (disabled) return;
-    const userReacted = reactions[emoji]?.includes(userId);
-    onReact(emoji, !userReacted);
+    const userReacted = didUserReact(reactions[emoji]);
+    onReact && onReact(emoji, !userReacted);
   };
 
   return (
     <Box sx={{ display: 'flex', gap: 1, alignItems: 'center', flexWrap: 'wrap' }}>
       {DEFAULT_EMOJIS.map((emoji) => {
-        const count = reactions[emoji]?.length || 0;
-        const userReacted = reactions[emoji]?.includes(userId);
+        const count = toCount(reactions[emoji]);
+        const userReacted = didUserReact(reactions[emoji]);
         return (
           <Tooltip key={emoji} title={userReacted ? 'Remove reaction' : 'React'}>
             <Chip
