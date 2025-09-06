@@ -40,9 +40,9 @@ function App() {
       <AuthProvider>
         <ToastProvider>
           <Router>
-            <Box sx={{ 
-              minHeight: '100vh', 
-              display: 'flex', 
+            <Box sx={{
+              minHeight: '100vh',
+              display: 'flex',
               flexDirection: 'column',
               backgroundColor: 'background.default'
             }}>
